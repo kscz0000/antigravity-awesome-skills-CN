@@ -1,0 +1,5 @@
+interface:
+  display_name: "维基构建器"
+  short_description: "启动并维护可配置的研究型维基"
+  brand_color: "#334155"
+  default_prompt: "使用 $wiki-builder 启动一个新的可配置研究型维基。"

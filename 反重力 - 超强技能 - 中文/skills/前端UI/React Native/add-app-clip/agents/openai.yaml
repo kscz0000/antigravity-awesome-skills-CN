@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add App Clip"
+  short_description: "向 Expo 应用添加 iOS App Clip 目标，包含 AASA、关联域与 TestFlight 配置"
+  default_prompt: "在为 Expo 应用添加或审查 iOS App Clip 目标时使用 $add-app-clip，包括 Bundle ID、关联域、AASA 文件、Smart App Banner、App Store Connect 配置以及 TestFlight 验证。"

@@ -1,0 +1,568 @@
+---
+title: "Google Photos"
+description: "Rclone Google Photos 后端文档，涵盖配置、限制与高级选项"
+versionIntroduced: "v1.49"
+---
+
+> **官方文档：** [https://rclone.org/googlephotos/](https://rclone.org/googlephotos/)
+# Google Photos
+
+[Google Photos](https://www.google.com/photos/about/) 的 rclone 后端是一个专用后端，用于在 Google Photos 之间传输照片和视频。
+
+**注意** rclone 使用的 Google Photos API 有相当多的限制，因此请仔细阅读[限制部分](#limitations)，以确保它适合你的使用场景。
+
+**注意** 从 2025 年 3 月 31 日起，rclone 只能下载它自己上传的照片。此限制是由于 Google 的政策变更造成的。升级到 rclone v1.70 后，你可能需要运行 `rclone config reconnect remote:` 才能让 rclone 重新工作。
+
+## 配置
+
+Google 云存储的初始设置需要在浏览器中从 Google Photos 获取令牌。`rclone config` 会引导你完成此过程。
+
+以下是创建名为 `remote` 的远程存储的示例。首先运行：
+
+```console
+rclone config
+```
+
+这将引导你完成一个交互式设置过程：
+
+```text
+No remotes found, make a new one?
+n) New remote
+s) Set configuration password
+q) Quit config
+n/s/q> n
+name> remote
+Type of storage to configure.
+Enter a string value. Press Enter for the default ("").
+Choose a number from below, or type in your own value
+[snip]
+XX / Google Photos
+   \ "google photos"
+[snip]
+Storage> google photos
+** See help for google photos backend at: https://rclone.org/googlephotos/ **
+
+Google Application Client Id
+Leave blank normally.
+Enter a string value. Press Enter for the default ("").
+client_id>
+Google Application Client Secret
+Leave blank normally.
+Enter a string value. Press Enter for the default ("").
+client_secret>
+Set to make the Google Photos backend read only.
+
+If you choose read only then rclone will only request read only access
+to your photos, otherwise rclone will request full access.
+Enter a boolean value (true or false). Press Enter for the default ("false").
+read_only>
+Edit advanced config? (y/n)
+y) Yes
+n) No
+y/n> n
+Remote config
+Use web browser to automatically authenticate rclone with remote?
+ * Say Y if the machine running rclone has a web browser you can use
+ * Say N if running rclone on a (remote) machine without web browser access
+If not sure try Y. If Y failed, try N.
+y) Yes
+n) No
+y/n> y
+If your browser doesn't open automatically go to the following link: http://127.0.0.1:53682/auth
+Log in and authorize rclone for access
+Waiting for code...
+Got code
+
+*** IMPORTANT: All media items uploaded to Google Photos with rclone
+*** are stored in full resolution at original quality.  These uploads
+*** will count towards storage in your Google Account.
+
+Configuration complete.
+Options:
+- type: google photos
+- token: {"access_token":"XXX","token_type":"Bearer","refresh_token":"XXX","expiry":"2019-06-28T17:38:04.644930156+01:00"}
+Keep this "remote" remote?
+y) Yes this is OK
+e) Edit this remote
+d) Delete this remote
+y/e/d> y
+```
+
+有关在没有联网浏览器的机器上进行设置的方法，请参阅[远程设置文档](/remote_setup/)。
+
+注意，如果使用浏览器自动认证，rclone 会在本地机器上运行一个 Web 服务器来收集从 Google 返回的令牌。此服务器仅在打开浏览器到获取验证码的那一刻之间运行。它监听在 `http://127.0.0.1:53682/`，如果你运行了主机防火墙，可能需要临时解除阻止，或者使用手动模式。
+
+此远程存储名为 `remote`，现在可以这样使用
+
+查看照片中的所有相册
+
+```console
+rclone lsd remote:album
+```
+
+创建新相册
+
+```console
+rclone mkdir remote:album/newAlbum
+```
+
+列出相册内容
+
+```console
+rclone ls remote:album/newAlbum
+```
+
+将 `/home/local/images` 同步到 Google Photos，并删除相册中多余的文件。
+
+```console
+rclone sync --interactive /home/local/image remote:album/newAlbum
+```
+
+### 目录布局
+
+由于 Google Photos 不是通用的云存储系统，后端的目录布局旨在帮助你导航。
+
+`media` 下的目录展示了不同的媒体分类方式。每个文件会出现多次。因此，如果你想备份 Google Photos，可以选择备份 `remote:media/by-month`。（**注意** `remote:media/by-day` 目前相当慢，因此请避免用于同步。）
+
+注意，你所有的照片和视频都会出现在 `media` 下的某个位置，但除非你将它们放入了相册，否则它们可能不会出现在 `album` 下。
+
+```text
+/
+- upload
+    - file1.jpg
+    - file2.jpg
+    - ...
+- media
+    - all
+        - file1.jpg
+        - file2.jpg
+        - ...
+    - by-year
+        - 2000
+            - file1.jpg
+            - ...
+        - 2001
+            - file2.jpg
+            - ...
+        - ...
+    - by-month
+        - 2000
+            - 2000-01
+                - file1.jpg
+                - ...
+            - 2000-02
+                - file2.jpg
+                - ...
+        - ...
+    - by-day
+        - 2000
+            - 2000-01-01
+                - file1.jpg
+                - ...
+            - 2000-01-02
+                - file2.jpg
+                - ...
+        - ...
+- album
+    - album name
+    - album name/sub
+- shared-album
+    - album name
+    - album name/sub
+- feature
+    - favorites
+        - file1.jpg
+        - file2.jpg
+```
+
+目录树中有两个可写入的部分：`upload` 目录和 `album` 目录的子目录。
+
+`upload` 目录用于上传你不想放入相册的文件。它一开始是空的，并且只包含你在一次 rclone 会话中上传的文件，重启 rclone 后会再次变为空。此功能的使用场景是：你有大量文件只想一次性导入 Google Photos。对于重复同步，上传到 `album` 效果更好。
+
+`album` 目录中的子目录也是可写入的，你可以在 `album` 下创建新的目录（相册）。如果你复制带有目录层级的文件到其中，rclone 会创建包含 `/` 字符的相册。例如，如果你执行
+
+```console
+rclone copy /path/to/images remote:album/images
+```
+
+并且 images 目录包含
+
+```text
+images
+    - file1.jpg
+    dir
+        file2.jpg
+    dir2
+        dir3
+            file3.jpg
+```
+
+那么 rclone 将创建以下相册及文件
+
+- images
+  - file1.jpg
+- images/dir
+  - file2.jpg
+- images/dir2/dir3
+  - file3.jpg
+
+这意味着你可以像使用普通文件系统一样使用 `album` 路径，它是重复同步的良好目标。
+
+`shared-album` 目录显示与你共享或由你共享的相册。这类似于 Google Photos 网页界面中的"共享"标签页。
+
+<!-- autogenerated options start - DO NOT EDIT - instead edit fs.RegInfo in backend/googlephotos/googlephotos.go and run make backenddocs to verify --> <!-- markdownlint-disable-line line-length -->
+### 标准选项
+
+以下是 google photos (Google Photos) 特有的标准选项。
+
+#### --gphotos-client-id
+
+OAuth 客户端 ID。
+
+通常留空即可。
+
+Properties:
+
+- Config:      client_id
+- Env Var:     RCLONE_GPHOTOS_CLIENT_ID
+- Type:        string
+- Required:    false
+
+#### --gphotos-client-secret
+
+OAuth 客户端密钥。
+
+通常留空即可。
+
+Properties:
+
+- Config:      client_secret
+- Env Var:     RCLONE_GPHOTOS_CLIENT_SECRET
+- Type:        string
+- Required:    false
+
+#### --gphotos-read-only
+
+设置为使 Google Photos 后端只读。
+
+如果你选择只读，则 rclone 只会请求对照片的只读访问权限，否则 rclone 会请求完全访问权限。
+
+Properties:
+
+- Config:      read_only
+- Env Var:     RCLONE_GPHOTOS_READ_ONLY
+- Type:        bool
+- Default:     false
+
+### 高级选项
+
+以下是 google photos (Google Photos) 特有的高级选项。
+
+#### --gphotos-token
+
+OAuth 访问令牌（JSON 格式）。
+
+Properties:
+
+- Config:      token
+- Env Var:     RCLONE_GPHOTOS_TOKEN
+- Type:        string
+- Required:    false
+
+#### --gphotos-auth-url
+
+认证服务器 URL。
+
+留空以使用提供商默认值。
+
+Properties:
+
+- Config:      auth_url
+- Env Var:     RCLONE_GPHOTOS_AUTH_URL
+- Type:        string
+- Required:    false
+
+#### --gphotos-token-url
+
+令牌服务器 URL。
+
+留空以使用提供商默认值。
+
+Properties:
+
+- Config:      token_url
+- Env Var:     RCLONE_GPHOTOS_TOKEN_URL
+- Type:        string
+- Required:    false
+
+#### --gphotos-client-credentials
+
+使用客户端凭证 OAuth 流程。
+
+这将使用 RFC 6749 中描述的 OAUTH2 客户端凭证流程。
+
+注意，此选项并非所有后端都支持。
+
+Properties:
+
+- Config:      client_credentials
+- Env Var:     RCLONE_GPHOTOS_CLIENT_CREDENTIALS
+- Type:        bool
+- Default:     false
+
+#### --gphotos-read-size
+
+设置为读取媒体项的大小。
+
+通常 rclone 不会读取媒体项的大小，因为这需要额外的事务。同步时不需要此操作。但是，rclone mount 需要在读取文件之前知道文件的大小，因此如果要在 rclone mount 中读取媒体，建议设置此标志。
+
+Properties:
+
+- Config:      read_size
+- Env Var:     RCLONE_GPHOTOS_READ_SIZE
+- Type:        bool
+- Default:     false
+
+#### --gphotos-start-year
+
+年份限制，仅下载在给定年份之后上传的照片。
+
+Properties:
+
+- Config:      start_year
+- Env Var:     RCLONE_GPHOTOS_START_YEAR
+- Type:        int
+- Default:     2000
+
+#### --gphotos-include-archived
+
+同时查看和下载已归档的媒体。
+
+默认情况下，rclone 不会请求已归档的媒体。因此，在同步时，已归档的媒体在目录列表中不可见，也不会被传输。
+
+注意，相册中的媒体无论其归档状态如何，始终可见且会被同步。
+
+启用此标志后，已归档的媒体在目录列表中始终可见并会被传输。
+
+不启用此标志时，已归档的媒体在目录列表中不可见，也不会被传输。
+
+Properties:
+
+- Config:      include_archived
+- Env Var:     RCLONE_GPHOTOS_INCLUDE_ARCHIVED
+- Type:        bool
+- Default:     false
+
+#### --gphotos-proxy
+
+使用 gphotosdl 代理下载全分辨率图片
+
+Google API 提供的图片和视频不是全分辨率的，且/或缺少 EXIF 数据。
+
+但是，如果你使用 gphotosdl 代理，则可以下载原始的、未更改的图片。
+
+这会在后台运行一个无头浏览器。
+
+从 [gphotosdl](https://github.com/rclone/gphotosdl) 下载该软件
+
+首次运行使用
+
+    gphotosdl -login
+
+登录 Google Photos 后关闭浏览器窗口，然后运行
+
+    gphotosdl
+
+然后提供参数 `--gphotos-proxy "http://localhost:8282"` 让 rclone 使用代理。
+
+
+Properties:
+
+- Config:      proxy
+- Env Var:     RCLONE_GPHOTOS_PROXY
+- Type:        string
+- Required:    false
+
+#### --gphotos-encoding
+
+后端的编码方式。
+
+详情请参阅[概述中的编码部分](/overview/#encoding)。
+
+Properties:
+
+- Config:      encoding
+- Env Var:     RCLONE_GPHOTOS_ENCODING
+- Type:        Encoding
+- Default:     Slash,CrLf,InvalidUtf8,Dot
+
+#### --gphotos-batch-mode
+
+上传文件批处理模式 sync|async|off。
+
+设置 rclone 使用的批处理模式。
+
+有 3 个可选值
+
+- off - 不批处理
+- sync - 批量上传并检查完成状态（默认）
+- async - 批量上传但不检查完成状态
+
+rclone 退出时会关闭所有未完成的批次，这可能会导致退出时有延迟。
+
+
+Properties:
+
+- Config:      batch_mode
+- Env Var:     RCLONE_GPHOTOS_BATCH_MODE
+- Type:        string
+- Default:     "sync"
+
+#### --gphotos-batch-size
+
+上传批次中的最大文件数。
+
+设置上传文件的批次大小。必须小于 50。
+
+默认为 0，表示 rclone 将根据 batch_mode 的设置计算批次大小。
+
+- batch_mode: async - 默认 batch_size 为 50
+- batch_mode: sync - 默认 batch_size 与 --transfers 相同
+- batch_mode: off - 不使用
+
+rclone 退出时会关闭所有未完成的批次，这可能会导致退出时有延迟。
+
+如果你要上传大量小文件，设置此值是个好主意，因为它会显著加快上传速度。你可以使用 --transfers 32 来最大化吞吐量。
+
+
+Properties:
+
+- Config:      batch_size
+- Env Var:     RCLONE_GPHOTOS_BATCH_SIZE
+- Type:        int
+- Default:     0
+
+#### --gphotos-batch-timeout
+
+空闲上传批次在上传前的最大等待时间。
+
+如果上传批次空闲时间超过此值，则会被上传。
+
+默认为 0，表示 rclone 将根据所使用的 batch_mode 选择合理的默认值。
+
+- batch_mode: async - 默认 batch_timeout 为 10s
+- batch_mode: sync - 默认 batch_timeout 为 1s
+- batch_mode: off - 不使用
+
+
+Properties:
+
+- Config:      batch_timeout
+- Env Var:     RCLONE_GPHOTOS_BATCH_TIMEOUT
+- Type:        Duration
+- Default:     0s
+
+#### --gphotos-batch-commit-timeout
+
+等待批次完成提交的最大时间。（已不再使用）
+
+Properties:
+
+- Config:      batch_commit_timeout
+- Env Var:     RCLONE_GPHOTOS_BATCH_COMMIT_TIMEOUT
+- Type:        Duration
+- Default:     10m0s
+
+#### --gphotos-description
+
+远程存储的描述。
+
+Properties:
+
+- Config:      description
+- Env Var:     RCLONE_GPHOTOS_DESCRIPTION
+- Type:        string
+- Required:    false
+
+<!-- autogenerated options stop -->
+
+## 限制
+
+只能上传图片和视频。如果你尝试上传非视频或图片，或 Google Photos 不支持的格式，rclone 会上传文件，但 Google Photos 在将其转换为媒体项时会返回错误。
+
+**注意** 从 2025 年 3 月 31 日起，rclone 只能下载它自己上传的照片。此限制是由于 Google 的政策变更造成的。升级到 rclone v1.70 后，你可能需要运行 `rclone config reconnect remote:` 才能让 rclone 重新工作。
+
+注意，通过 API 上传到 Google Photos 的所有媒体项都以"原始质量"的全分辨率存储，**将**计入你的 Google 账户存储配额。API **不**提供以"高质量"模式上传的方式。
+
+`rclone about` 不受 Google Photos 后端支持。缺少此功能的后端无法为 rclone mount 确定可用空间，也无法在 rclone union 远程存储中使用 `mfs`（最大可用空间）策略。
+
+参阅[不支持 rclone about 的后端列表](https://rclone.org/overview/#optional-features)
+参阅[rclone about](https://rclone.org/commands/rclone_about/)
+
+### 下载图片
+
+下载图片时会剥离 EXIF 位置信息（根据文档和测试）。这是 Google Photos API 的限制，相关问题是 [bug #112096115](https://issuetracker.google.com/issues/112096115)。
+
+**当前的 Google API 不允许以原始分辨率下载照片。这非常重要，例如，如果你依赖"Google Photos"作为照片备份，你将无法使用 rclone 重新下载原始图片。你可以使用 Google Takeout 作为最后的手段来恢复原始照片**
+
+**注意**你**可以**使用 [--gphotos-proxy](#gphotos-proxy) 标志通过无头浏览器以全分辨率下载图片。
+
+### 下载视频
+
+下载视频时，与通过 Google Photos 网页界面下载相比，下载的是高度压缩的视频版本。相关问题是 [bug #113672044](https://issuetracker.google.com/issues/113672044)。
+
+**注意**你**可以**使用 [--gphotos-proxy](#gphotos-proxy) 标志通过无头浏览器以全分辨率下载图片。
+
+### 重复文件
+
+如果目录中的文件名重复，rclone 会将文件 ID 添加到文件名中。因此两个名为 `file.jpg` 的文件将显示为 `file {123456}.jpg` 和 `file {ABCDEF}.jpg`（实际 ID 要长得多！）。
+
+如果你上传相同的图片（具有相同的二进制数据）两次，Google Photos 会对其进行去重。但是它会保留第一次上传时的文件名，这可能会让 rclone 感到困惑。例如，如果你将一张图片上传到 `upload`，然后将相同的图片上传到 `album/my_album`，`album/my_album` 中图片的文件名将是初次上传时的文件名，而不是你上传到 `album` 时使用的文件名。实际上这不会造成太多问题。
+
+### 修改时间
+
+Google Photos 中显示的媒体日期是由 EXIF 信息确定的创建日期，如果不可知则为上传日期。
+
+这不能被 rclone 更改，也不是本地磁盘上媒体的修改日期。这意味着 rclone 不能使用 Google Photos 中的日期进行同步。
+
+### 大小
+
+Google Photos API 不返回媒体的大小。这意味着在同步到 Google Photos 时，rclone 只能进行文件存在性检查。
+
+可以读取媒体的大小，但这需要对每个媒体项发起额外的 HTTP HEAD 请求，因此**非常慢**且会消耗大量事务。可以通过 `--gphotos-read-size` 选项或 `read_size = true` 配置参数启用此功能。
+
+如果你想在后端使用 `rclone mount`，你可能需要启用此标志（取决于你的操作系统和访问照片的应用程序），否则你可能无法从挂载点读取媒体。你需要自行尝试在不启用此标志的情况下是否可以正常工作。
+
+### 相册
+
+Rclone 只能将文件上传到它创建的相册中。这是 [Google Photos API 的限制](https://developers.google.com/photos/library/guides/manage-albums)。
+
+Rclone 只能从它创建的相册中删除它上传的文件。
+
+### 删除文件
+
+Rclone 可以从它创建的相册中删除文件，但请注意 Google Photos API 不允许永久删除媒体，因此这些媒体仍然会保留。参阅 [bug #109759781](https://issuetracker.google.com/issues/109759781)。
+
+Rclone 不能在 `album` 以外的任何位置删除文件。
+
+### 删除相册
+
+Google Photos API 不支持删除相册 - 参阅 [bug #135714733](https://issuetracker.google.com/issues/135714733)。
+
+## 创建自己的 client_id
+
+当你在默认配置下使用 rclone 与 Google Photos 时，你使用的是 rclone 的 client_id。这在所有 rclone 用户之间共享。Google 对每个 client_id 每秒可执行的查询次数设置了全局速率限制。
+
+如果此 client_id 出现问题（例如配额太低或 client_id 停止工作），你可以创建自己的。
+
+请按照 [Google Drive 文档](https://rclone.org/drive/#making-your-own-client-id)中的步骤操作，但有以下区别：
+
+- 在第 3 步中，不要启用"Google Drive API"，而是搜索并启用"Photos Library API"。
+
+- 在第 5 步中，你需要添加不同的作用域。使用以下作用域代替 Drive 的作用域：
+
+```text
+https://www.googleapis.com/auth/photoslibrary.appendonly
+https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata
+https://www.googleapis.com/auth/photoslibrary.edit.appcreateddata
+```

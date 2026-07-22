@@ -1,0 +1,91 @@
+{
+  "reference_paper": "Gao et al. 2023, Retrieval-Augmented Generation for Large Language Models: A Survey (arXiv:2312.10997)",
+  "why_reference": "清晰的学术排版、令人印象深刻的分类体系树、范式对比图、从基础到方法到评估的结构化递进。适合作为智能体工具综述的锚点。",
+  "layout": {
+    "format": "单个自包含 HTML 文件，学术双栏启发式布局但在现代浏览器上响应式适配",
+    "page_width": "max-width 1100px, 居中",
+    "columns": "视口 >= 900px 时双栏正文，移动端单栏",
+    "margins": "宽裕，学术论文风格",
+    "background": "暖白色 (#fbfaf6 或类似)",
+    "body_text_color": "近黑色 (#1a1a1a)"
+  },
+  "typography": {
+    "body_font": "Georgia, 'Times New Roman', serif",
+    "heading_font": "Georgia, serif，略重字重",
+    "monospace": "SFMono-Regular, Menlo, Consolas, monospace",
+    "body_size": "15px 或 16px，行高 1.55",
+    "section_numbering": "编号章节和子章节，如 1, 1.1, 2, 2.1",
+    "title_size": "大号，标题块居中",
+    "author_and_affiliation": "标题下方居中，较小斜体"
+  },
+  "structural_elements": {
+    "title_block": "论文标题、作者占位、机构占位（Anonymous / DAIR Research Notes）、日期",
+    "abstract": "斜体段落标注 'Abstract'，单栏，以细微边框或间距分隔",
+    "keywords": "摘要下方一行 4 到 6 个关键词",
+    "section_headings": "加粗、编号、左对齐",
+    "subsection_headings": "加粗斜体、编号",
+    "paragraphs": "两端对齐，首行缩进可选",
+    "inline_citations": "括号引用如 (Yao et al., 2022) 匹配参考文献 key",
+    "references_section": "编号列表，悬挂缩进，末尾章节"
+  },
+  "required_figures": [
+    {
+      "id": "Figure 1",
+      "caption": "所综述领域的分类体系。从 research_bundle.taxonomy 推导节点标签。",
+      "description": "水平分类体系树，渲染为内联 SVG。三列垂直布局：左侧为根节点，中间为分支，右侧为叶节点。视口高度必须足够容纳所有叶节点而不重叠：计算 viewport_height 为 sum_over_branches(max(1, children_count) * 28) + 40 并显式设置，viewport_width 设为 820。使用 preserveAspectRatio 默认值。\n\n根节点：一个圆角矩形，位于 x=20, y=(viewport_height/2 - 18), width=200, height=36, rx=6, fill #8a2a2b。文本：加粗 Georgia 14px, fill #fbfaf6, text-anchor middle, x=120, y=(root_y + 23)。宽度 200 确保 'Agentic Engineering' 及类似标签能容纳；即使标签很短也不要缩小到 200 以下。\n\n分支列：research_bundle.taxonomy.branches 中每个条目一个圆角矩形，均位于 x=260, width=200, height=32, rx=4, fill #f0efe9, stroke #1a1a1a at 1.2。分支 i 的垂直位置必须是其自身叶节点块的垂直中心（见下文）减去 16。标签：Georgia 12px, text-anchor middle, x=360, y=(branch_y + 20)。\n\n叶节点列：每个叶节点矩形 x=500, width=300, height=22, rx=3, fill #fbfaf6, stroke #c0bdb0 at 0.8。相邻叶节点之间的垂直间距精确为 28（矩形高度 22 加 6px 间隙）。分支 i 的叶节点块起始位置为 cumulative_y，其中分支 0 为 20，分支 i > 0 为 cumulative_y_of_previous_branch + 28 * children_count_of_previous_branch。在分支的叶节点块内，叶节点 j 位于 y = branch_block_start_y + 28 * j。叶节点标签：Georgia 10px, text-anchor middle, x=650, y=(leaf_y + 15)。叶节点矩形绝不可视觉重叠，叶节点文本绝不可跨越矩形边界。\n\n连接线：从根节点右边缘 (x=220, y=root_y+18) 到每个分支左边缘 (x=260, y=branch_y+16)，每个分支绘制一条平滑三次贝塞尔曲线。从每个分支右边缘 (x=460, y=branch_y+16) 到其每个叶节点左边缘 (x=500, y=leaf_y+11)，每个叶节点绘制一条短水平线。\n\n硬性约束（生成前检查）：同一列中没有任何两个矩形有重叠的 y 范围；每个标签都位于其矩形内部；视口高度等于 sum_over_branches(children_count) * 28 + 40（最小值 360）；贝塞尔连接线使用 C 命令而非 L 命令。",
+      "element_budget": "约 60 到 80 个 SVG 元素"
+    },
+    {
+      "id": "Figure 2",
+      "caption": "所综述领域的三种范式。从 research_bundle.paradigms 推导面板内容。",
+      "description": "三个并排面板，渲染为内联 SVG，视口精确为 780 宽 x 280 高。每个面板对应 research_bundle.paradigms 中的一个条目（恰好三个范式）。关键布局约束：三个面板背景矩形固定于 x=10 width=240、x=270 width=240 和 x=530 width=240，均有 y=10 height=260, rx=6, fill #faf9f4, stroke #d6d3c4。属于范式索引 i 的每个节点和连接线必须渲染在面板 i 的内部。内部 x 范围为：面板 1 x 在 [30, 230]，面板 2 x 在 [290, 490]，面板 3 x 在 [550, 750]。节点的内部 y 范围在每个面板中为 [55, 250]（标题位于 y=32）。必需实现：将每个面板的节点和连接线包裹在单个 <g transform='translate(OFFSET,0)'> 组中，其中 OFFSET 面板 1 为 10，面板 2 为 270，面板 3 为 530（这些偏移量与面板背景 x 位置匹配，因此面板局部 x=120 映射到每个面板的水平中心）。在每个组内使用范围 [10, 230] 的面板局部 x 坐标，并排列可见内容使其集体水平中心位于面板局部 x=120。具体来说：如果内容有单行节点，将该行居中于面板局部 x=120；如果内容有多个垂直堆叠的行（例如，父节点在子节点行上方），则每行独立居中于面板局部 x=120，使父节点和子节点共享穿过 x=120 的垂直轴线。不要对所有三个范式重用相同的绝对 x 坐标。面板标题位于 y=32，加粗 Georgia 13px, text-anchor middle, x 位于面板水平中心 (130, 390, 650)。定义单个 <marker id='arrow'> 带小填充三角形，通过 marker-end 在有向连接线上复用。将 paradigm.nodes 渲染为圆角矩形 (rx=4, fill #f0efe9, stroke #1a1a1a at 1.2, Georgia 11px 标签, text-anchor middle)。绘制 paradigm.flow 描述的连接线；flow 字符串在数据文件中使用箭头语法（例如 'Observe -> Reason -> Act -> Observe' 表示三节点循环）。将每个有向关系转换为带箭头的连接线。如果 paradigm.flow 包含 'bi:' 前缀，渲染一对双向箭头。保持所有三个面板中节点大小一致。此箭头表示法仅出现在数据文件内部；正文叙述中仍须避免箭头符号。\n\n多节点行几何（关键）：当 N 个兄弟节点位于面板内同一水平行时（例如协调者-工作者面板中的 Worker A、Worker B、Worker C，或扇出布局中的三个兄弟），其矩形宽度和中心必须遵循以下确定性公式，使矩形永不重叠且行居中于面板局部 x=120。面板内部宽度为 220（面板局部 x 在 [10, 230]，水平中心 120）。计算 rect_width = floor((200 - 10 * (N + 1)) / N) 并限制最小值 44 和最大值 72。计算 total_row_width = N * rect_width + (N - 1) * 10。计算 start_x（面板局部，最左矩形左边缘）= 120 - total_row_width / 2。计算 center_x_i（面板局部）= start_x + (rect_width / 2) + (rect_width + 10) * i，其中 i 取 0..N-1。使用 rect_height = 26。相邻矩形之间必须至少保留 10 个面板局部像素的水平间隙。如果标签在计算出的 rect_width 内以 11px 无法容纳，降至 Georgia 10px；如果仍无法容纳，缩短标签（例如 'Worker A' 而非 'Worker Agent A'。永远不要为容纳标签而将矩形宽度扩展到计算出的 rect_width 之外。\n\n硬性约束（生成前检查）：同一面板同一 y 行中没有任何两个矩形有重叠的 x 范围；每个标签完全位于其矩形内部；面板 i 的节点矩形不与面板 j (i != j) 的背景重叠；每条连接线的端点位于节点矩形边缘而非内部；每个面板可见内容的集体水平中心与面板局部 x=120 对齐（如果面板有多个垂直行，每行独立居中于 x=120）。",
+      "element_budget": "约 60 到 80 个 SVG 元素"
+    },
+    {
+      "id": "Figure 3",
+      "caption": "所综述领域的代表性技术栈。从 research_bundle.stack 推导各层内容。",
+      "description": "垂直分层栈图，渲染为内联 SVG，视口精确为 720 宽 x 360 高。将 SVG width 属性和 viewBox 均设为 '0 0 720 360'。research_bundle.stack 中每个条目一个水平层条（按数组给定顺序从下到上），每条精确 360 宽，起始于 x=40（因此条的右边缘为 x=400），高 44，圆角 rx=4，层间至少 8px 垂直间隙。通过从下到上变化填充色 #e8e6dc, #ece9df, #f0ede2, #f4f1e6, #f8f5e9, #fbfaf6 实现跨栈的微妙填充渐变（如果层数多于或少于六，循环或插值）。添加左侧强调条（fill #8a2a2b, width 4），仅贯穿最底层全高，以强调其基础角色。层标签（research_bundle.stack[i].name）居中于每个条内部，Georgia 加粗 13px。在每个条右侧，将 research_bundle.stack[i].role 渲染为简短斜体描述短语（约 6 到 10 词），Georgia 11px, 颜色 #6b6b6b，垂直居中。角色文本 tspan 起始于 x=420，必须最多换行两行（dy=0 和 dy=14），使最宽行在视口右边缘 x=720 内。如果某行将超过 x=700，在较早的词边界处断行或缩短角色短语；永远不允许文本超过 x=710。",
+      "element_budget": "约 40 个 SVG 元素"
+    }
+  ],
+  "figure_quality_note": "图表应读起来像精心制作的学术图表，而非粗略线框。在所有三个图表中保持一致的视觉词汇：相同的描边粗细、相同的圆角半径、相同的排版（Georgia 衬线体）和共享的箭头标记定义。避免渐变和滤镜，但可以使用微妙的填充差异、圆角和贝塞尔曲线。每个标签必须有足够的内边距，永远不接触边框或其他标签。",
+  "required_tables": [
+    {
+      "id": "Table 1",
+      "caption": "所综述各维度的代表性系统。从 research_bundle.table.columns 推导列，从 research_bundle.table.rows 推导行。",
+      "columns_source": "research_bundle.table.columns（4 到 6 个短列标题数组）。",
+      "rows_source": "research_bundle.table.rows（8 到 12 个对象数组，每个代表一个代表性系统，包含每列的值）。"
+    }
+  ],
+  "color_palette": {
+    "background": "#fbfaf6",
+    "text": "#1a1a1a",
+    "accent": "#8a2a2b",
+    "muted": "#6b6b6b",
+    "rule_lines": "#d6d3c4"
+  },
+  "tone_and_voice": {
+    "register": "学术综述，审慎，精确",
+    "person": "第三人称，无第一人称口吻",
+    "claims": "描述性而非宣传性，适当使用限定语",
+    "avoid": [
+      "营销语言",
+      "感叹号",
+      "非正式缩写",
+      "破折号",
+      "正文中的箭头符号"
+    ]
+  },
+  "hard_rules_for_generation": [
+    "恰好输出一个自包含的 HTML 文档。无外部 CSS、无外部 JS、无外部图片、无网络字体。全部内联。",
+    "所有图表必须渲染为 HTML 内的内联 SVG 元素。",
+    "按 required_figures 的确切顺序输出图表，并在每个 figcaption 中使用 required_figures[].id 的确切数字编号（图 1、图 2、图 3 依次排列）。图 N 必须在文档顺序中出现在图 N+1 之前。即使周围正文的阅读顺序看起来更合适，也不要重新编号、跳过或调换图表。将每个图放在主题最匹配的章节中，但如果两个图出现在同一章节中，请保持数字顺序。",
+    "仅引用所提供 research_bundle 中的参考文献条目。不要编造引用。",
+    "使用 research_bundle 中的章节结构。不要添加或删除章节。",
+    "正文总长度目标：所有章节合计约 5000 到 6500 词。每个章节应有实质性讨论（至少 3 段）并整合多篇引用文献。在达到 token 预算前完成所有章节和参考文献章节。",
+    "按顺序生成章节。将图表放在其章节内。如果 token 预算紧张，缩短正文而非省略章节或参考文献。",
+    "不要在 <!DOCTYPE html> 之前或 </html> 之后包含任何内容。",
+    "正文中不使用破折号或箭头符号。",
+    "在末尾生成参考文献章节，按数字顺序列出每条参考文献条目，格式一致。"
+  ]
+}

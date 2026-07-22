@@ -1,0 +1,1195 @@
+{
+  "title": "智能体工程：大型语言模型智能体工具综述",
+  "authors_placeholder": "匿名",
+  "anchor_source": "https://github.com/dair-ai/AI-Papers-of-the-Week",
+  "abstract_hints": [
+    "大型语言模型日益被部署为自主智能体，在软件工程、网络导航和桌面自动化等领域执行多步骤工作流。",
+    "工具栈——从单智能体循环到多智能体编排、从基于提示的工具到强化学习训练的技能——正在快速标准化。",
+    "本综述对智能体工程进行分类，涵盖基础、范式、系统、评估和开放挑战，并基于 100 篇精选论文。"
+  ],
+  "taxonomy": {
+    "root": "智能体工程",
+    "branches": [
+      {
+        "name": "设计模式",
+        "children": [
+          "Workflows",
+          "Orchestrator-Workers",
+          "Autonomous Loops",
+          "Meta-Agent Search"
+        ]
+      },
+      {
+        "name": "推理与规划",
+        "children": [
+          "Chain-of-Thought",
+          "Deliberative Search",
+          "Adaptive Reasoning"
+        ]
+      },
+      {
+        "name": "工具使用",
+        "children": [
+          "Function Calling",
+          "MCP Interfaces",
+          "Tool Description Optimization",
+          "Search Efficiency"
+        ]
+      },
+      {
+        "name": "记忆与长视野",
+        "children": [
+          "Working Memory",
+          "Persistent Notes",
+          "Context Compression",
+          "Memory as Tools"
+        ]
+      },
+      {
+        "name": "多智能体协调",
+        "children": [
+          "Consensus Protocols",
+          "Routing and Bidding",
+          "Hierarchical Delegation"
+        ]
+      },
+      {
+        "name": "训练与优化",
+        "children": [
+          "Agentic RL",
+          "Self-Distillation",
+          "Simulated Environments",
+          "Meta-Agent Discovery"
+        ]
+      },
+      {
+        "name": "评估",
+        "children": [
+          "General Benchmarks",
+          "Tool-Use Benchmarks",
+          "Process-Level Verification",
+          "Empirical Studies"
+        ]
+      },
+      {
+        "name": "安全与对齐",
+        "children": [
+          "Offensive Capability",
+          "Sabotage Arenas",
+          "Alignment Auditing",
+          "Anti-Scheming Training"
+        ]
+      }
+    ]
+  },
+  "paradigms": [
+    {
+      "name": "Workflow",
+      "nodes": [
+        "规划",
+        "工具调用",
+        "验证"
+      ],
+      "flow": "规划 -> 工具调用 -> 验证 -> 规划"
+    },
+    {
+      "name": "协调者-工作者",
+      "nodes": [
+        "协调者",
+        "工作者 A",
+        "工作者 B",
+        "工作者 C"
+      ],
+      "flow": "协调者 -> 工作者 A; 协调者 -> 工作者 B; 协调者 -> 工作者 C"
+    },
+    {
+      "name": "Autonomous Loop",
+      "nodes": [
+        "行动",
+        "反思",
+        "记忆"
+      ],
+      "flow": "行动 -> 反思 -> 行动; bi: 反思 -> 记忆"
+    }
+  ],
+  "stack": [
+    {
+      "name": "Base Model",
+      "role": "具备强推理和函数调用先验的前沿或开放权重 LLM。"
+    },
+    {
+      "name": "推理与规划",
+      "role": "链式思维、审慎搜索和自适应循环脚手架。"
+    },
+    {
+      "name": "记忆与上下文",
+      "role": "工作记忆、持久笔记和超越窗口的压缩。"
+    },
+    {
+      "name": "工具接口",
+      "role": "函数调用、MCP 服务器和类型化可执行扩展。"
+    },
+    {
+      "name": "编排层",
+      "role": "工作流图、多智能体协调和元智能体搜索。"
+    },
+    {
+      "name": "评估与可观测性",
+      "role": "基准测试、轨迹捕获和面向可靠性的过程级指标。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "1",
+      "title": "引言",
+      "guidance": "将智能体工程框定为围绕基础模型的独立实践。区分模型能力与工具能力，引用脚手架可超越原始模型性能的经验证据。预览分类体系并解释为何现在需要专门的综述。引用 DAIR-AI Papers of the Week 档案作为锚点来源，并说明范围：涵盖设计、推理、工具使用、记忆、协调、训练、评估和安全八大实质性支柱。注意本综述基于这些支柱中约一百篇代表性工作。",
+      "papers": [
+        "CCA",
+        "AIAgentsCoding2025",
+        "DeepResearch",
+        "WorkflowOpt",
+        "ReActSurvey",
+        "ContextEngSurv",
+        "AIAgentAdopt"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "智能体系统的设计模式",
+      "guidance": "综述构建智能体行为的常见模式。对比工作流式管线与完全自主循环。覆盖协调者-工作者分解、基于 DAG 的任务规划、使用 AND-OR 树的层级规划、自动化智能体设计的元智能体搜索，以及将计算、记忆和输入输出统一为学习运行时状态的最新提案。讨论感知个性化的架构和效率驱动的研究。",
+      "papers": [
+        "WorkflowOpt",
+        "ADAS",
+        "TURA",
+        "MACI",
+        "NeuralComps",
+        "StructuredAgent",
+        "MAPLE",
+        "PAHF",
+        "EffAgents",
+        "OpenDevin",
+        "OSCopilot",
+        "MagenticOne",
+        "SelfOrgAgents",
+        "ChainOfAgents",
+        "AgentsMD",
+        "AgentDataProto"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "推理与规划脚手架",
+      "guidance": "覆盖工具如何在基础模型之上构建推理结构。讨论链式思维和审慎搜索作为原语，自适应循环和门控记忆机制的出现，反思模式的参数化编码，以及文本推理和代码执行之间的自适应切换。注意循环归纳偏置通常比架构复杂化更重要。",
+      "papers": [
+        "UnivReasoning",
+        "AdaptiveLooping",
+        "ParamMem",
+        "AgenticR1",
+        "PlanAct",
+        "DeepSeekV32",
+        "K2Think",
+        "rStar2Agent",
+        "INTELLECT3",
+        "LlamaNemotron"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "工具使用与环境接口",
+      "guidance": "将工具形式化为模型调用的外部程序。覆盖函数调用、模型上下文协议生态、工具描述的学习式重写、用于决定何时搜索的强化学习策略，以及将 GUI 智能体程序化转换为状态机规划器。讨论工具目录规模化时出现的可靠性故障。",
+      "papers": [
+        "WhatAreTools",
+        "LiveMCP101",
+        "ToolDescRewrite",
+        "SEM",
+        "ActionEngine",
+        "UITARS",
+        "GUIR1",
+        "ComputerRL",
+        "CoAct1",
+        "ColorAgent",
+        "WebRL",
+        "AgentFold",
+        "GUIAgentDawn",
+        "GraphR1",
+        "ToolAgentRetr",
+        "OpenDeepSearch",
+        "SFRDeepResearch",
+        "TTDDR",
+        "TUMIX"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "记忆与长视野控制",
+      "guidance": "综述在上下文窗口之外维持有用状态的技术。覆盖分层工作记忆、规划器-摘要器智能体、跨会话持久笔记、序列模型中的几何记忆结构、替代无限上下文的有界内部状态、带自适应检索的语义压缩、智能体认知压缩器、跨异构智能体的协作记忆，以及将记忆操作暴露为工具。强调记忆设计与长视野可靠性之间的联系。",
+      "papers": [
+        "CCA",
+        "GeometricMem",
+        "MemCollab",
+        "xMemory",
+        "InfMem",
+        "SimpleMem",
+        "AgentCC",
+        "MIA",
+        "AgeMem"
+      ]
+    },
+    {
+      "id": "6",
+      "title": "多智能体系统与协调",
+      "guidance": "综述多个专业化智能体如何协调。覆盖带提前终止的共识协议、异构模型间的拍卖式路由，以及委托相比集中式决策能实现什么的理论极限。对比有充分算力的单智能体系统在多跳推理上常匹配多智能体架构的经验主张。",
+      "papers": [
+        "SingleVsMulti",
+        "ReliabilityLimits",
+        "Aegean",
+        "SALE"
+      ]
+    },
+    {
+      "id": "7",
+      "title": "智能体的训练与优化",
+      "guidance": "覆盖智能体如何在自己的轨迹上训练。综述规模化模拟工具使用环境、两阶段智能体经验学习、面向密集信用分配的自蒸馏、端到端作为工具使用训练的记忆控制、通过 RL 优化的索引经验记忆、记忆架构的元智能体发现，以及通过混合专家和混合思考模式内置智能体能力的指令调优前沿版本。",
+      "papers": [
+        "AgentScaler",
+        "SDPO",
+        "MemexRL",
+        "MemFactory",
+        "ALMA",
+        "GLM45",
+        "CommandA",
+        "DualDistill",
+        "SelfPlaySWERL",
+        "KimiDev",
+        "AlphaEvolve",
+        "DeepSeekProver"
+      ]
+    },
+    {
+      "id": "8",
+      "title": "智能体系统的评估",
+      "guidance": "综述区分工具贡献与基础模型能力的基准。对比静态问答基准与交互式工具接地基准、真实世界软件工程评估、降低计算机使用智能体假阳性率的验证器框架、需要探索和目标推断的智能体智能基准，以及区分智能体记忆中检索失败与利用失败的诊断框架。讨论持续的人-智能体差距和向过程级指标的转变。",
+      "papers": [
+        "GAIA",
+        "LiveMCP101",
+        "AIAgentsCoding2025",
+        "DiagnosticMem",
+        "UnivVerifier",
+        "ARCAGI3",
+        "MemoryArena",
+        "HackWebsites",
+        "MCPEval",
+        "Gaia2",
+        "TerminalBench2",
+        "PaperBench",
+        "SWEEVO",
+        "AgynSWE",
+        "Agentless",
+        "OpenHandsVersa",
+        "CodeResearcher",
+        "AgenticScience"
+      ]
+    },
+    {
+      "id": "9",
+      "title": "智能体的安全、鲁棒性与对齐",
+      "guidance": "综述智能体能力如何改变安全图景。覆盖证明具有工具访问的智能体可自主执行攻击性操作的经验研究、在真实智能体设置中进行破坏的受控红队竞技场、在智能体压力下前沿模型中目标冲突导致错位的证据、将智能体困入有害行为的对抗性环境，以及旨在防止智能体提示下图谋的审议式对齐训练。讨论新兴的探测其他智能体隐藏目标的对齐审计智能体及其提出的方法论问题。",
+      "papers": [
+        "HackWebsites",
+        "SHADEArena",
+        "AgenticMisalign",
+        "AgentTraps",
+        "AntiScheming",
+        "AlignAudit",
+        "Claudini"
+      ]
+    },
+    {
+      "id": "10",
+      "title": "开放问题与未来方向",
+      "guidance": "讨论长视野可靠性、协调者-工作者系统中的成本和延迟、工具跨基础模型的可移植性、工具接口的标准化、攻击性能力研究所揭示的安全影响、衡量过程级行为而非聚合准确性的挑战，以及社区策展资源在追踪快速变化领域中的作用。最后激励七大支柱的持续整合和开放推理基础设施对可复现智能体研究的重要性。"
+    }
+  ],
+  "table": {
+    "columns": [
+      "系统",
+      "主要机制",
+      "关键贡献",
+      "主要评估方式"
+    ],
+    "rows": [
+      {
+        "系统": "Confucius Code Agent",
+        "Primary Pillar": "设计 + 记忆",
+        "Pattern": "带规划器和笔记员的协调者",
+        "Tool or Memory Interface": "分层工作记忆和持久笔记",
+        "主要评估方式": "SWE-Bench-Pro (54.3 percent Resolve@1)"
+      },
+      {
+        "系统": "AgentScaler",
+        "Primary Pillar": "训练",
+        "Pattern": "前向模拟多轮智能体",
+        "Tool or Memory Interface": "30k+ 聚类 API 作为可执行函数",
+        "主要评估方式": "tau-bench, tau2-bench, ACEBench"
+      },
+      {
+        "系统": "Agentic-R1",
+        "Primary Pillar": "推理 + 训练",
+        "Pattern": "自适应文本与基于工具的推理",
+        "Tool or Memory Interface": "通过蒸馏教师进行代码执行",
+        "主要评估方式": "DeepMath-L, Combinatorics300"
+      },
+      {
+        "系统": "TURA",
+        "Primary Pillar": "设计",
+        "Pattern": "带蒸馏执行器的 DAG 任务规划器",
+        "Tool or Memory Interface": "意图感知 MCP 服务器检索",
+        "主要评估方式": "Tool-use accuracy (88.3 percent)"
+      },
+      {
+        "系统": "GLM-4.5",
+        "Primary Pillar": "训练",
+        "Pattern": "混合思考与直接模式",
+        "Tool or Memory Interface": "XML 标记函数调用",
+        "主要评估方式": "tau-bench 70.1, BFCL-V3 77.8"
+      },
+      {
+        "系统": "Command A",
+        "Primary Pillar": "训练",
+        "Pattern": "企业 RAG 加工具使用智能体",
+        "Tool or Memory Interface": "ReAct 风格函数调用",
+        "主要评估方式": "tau-bench, BFCL, enterprise generative tasks"
+      },
+      {
+        "系统": "ADAS (Meta Agent Search)",
+        "Primary Pillar": "设计",
+        "Pattern": "元智能体合成新智能体",
+        "Tool or Memory Interface": "程序化智能体构建",
+        "主要评估方式": "Transfer across reasoning and tool-use tasks"
+      },
+      {
+        "系统": "ActionEngine",
+        "Primary Pillar": "工具使用",
+        "Pattern": "作为程序化规划器的 GUI 智能体",
+        "Tool or Memory Interface": "离线状态机探索",
+        "主要评估方式": "Reddit GUI tasks (95 percent, 11.8x cost reduction)"
+      },
+      {
+        "系统": "SALE",
+        "Primary Pillar": "多智能体",
+        "Pattern": "智能体间拍卖式路由",
+        "Tool or Memory Interface": "共享拍卖记忆",
+        "主要评估方式": "53 percent reduction in large-model reliance"
+      },
+      {
+        "系统": "ALMA",
+        "Primary Pillar": "训练",
+        "Pattern": "元智能体记忆发现",
+        "Tool or Memory Interface": "开放式代码探索",
+        "主要评估方式": "Domain-adaptive memory outperforming human baselines"
+      }
+    ]
+  },
+  "bibliography": [
+    {
+      "key": "WhatAreTools",
+      "authors": "Wang, Z. et al.",
+      "year": "2024",
+      "title": "What Are Tools Anyway? A Survey of Tool Use in LLMs",
+      "venue": "Preprint 2024",
+      "summary": "将工具形式定义为语言模型调用的外部程序，提出覆盖函数调用、检索、代码执行和浏览的统一分类体系，并进行工具使用的经验成本效益分析。"
+    },
+    {
+      "key": "WorkflowOpt",
+      "authors": "IBM Research",
+      "year": "2026",
+      "title": "Workflow Optimization for LLM Agents",
+      "venue": "arXiv:2603.22386",
+      "summary": "将智能体系统框架为智能体计算图，沿结构何时固定、优化什么以及哪些评估信号引导搜索三个维度组织优化方法的综述。"
+    },
+    {
+      "key": "ADAS",
+      "authors": "Hu, S. et al.",
+      "year": "2024",
+      "title": "Automated Design of Agentic Systems",
+      "venue": "arXiv:2408.08435",
+      "summary": "元智能体搜索过程，从不断增长的档案中迭代编程和测试新智能体，证明提示、工具使用和控制流均可自动发现。"
+    },
+    {
+      "key": "TURA",
+      "authors": "TURA Authors",
+      "year": "2025",
+      "title": "Tool-Augmented Unified Retrieval Agent for AI Search",
+      "venue": "arXiv:2508.04604",
+      "summary": "生产框架，通过意图感知 MCP 检索、基于 DAG 的任务规划和蒸馏小模型执行器扩展 RAG，以部分延迟达到教师精度。"
+    },
+    {
+      "key": "LiveMCP101",
+      "authors": "LiveMCP-101 Authors",
+      "year": "2025",
+      "title": "LiveMCP-101: Benchmarking Real-World MCP Agents",
+      "venue": "arXiv:2508.15760",
+      "summary": "涵盖搜索、文件操作、数学和数据分析的 101 个真实查询 MCP 智能体基准，暴露领先模型的工具编排弱点。"
+    },
+    {
+      "key": "ToolDescRewrite",
+      "authors": "Intuit AI Research",
+      "year": "2026",
+      "title": "Learning to Rewrite Tool Descriptions",
+      "venue": "arXiv:2602.20426",
+      "summary": "Trace-Free+ 课程学习框架，无需执行轨迹即可为智能体优化工具描述，泛化到未见工具和大型工具目录。"
+    },
+    {
+      "key": "SEM",
+      "authors": "SEM Authors",
+      "year": "2025",
+      "title": "Reinforcement Learning for Search-Efficient LLMs",
+      "venue": "arXiv:2505.07903",
+      "summary": "基于 GRPO 的训练，采用结构化思考-回答-搜索-结果格式，教会模型何时调用搜索何时依赖参数知识，提高准确率同时降低搜索比例。"
+    },
+    {
+      "key": "CCA",
+      "authors": "Qi, Z. et al.",
+      "year": "2026",
+      "title": "Confucius Code Agent",
+      "venue": "arXiv:2512.10398",
+      "summary": "基于 Confucius SDK 的软件工程智能体，具备分层工作记忆、持久笔记、模块化工具扩展和元智能体构建-测试-改进循环，在 SWE-Bench-Pro 上达到 54.3% Resolve@1。"
+    },
+    {
+      "key": "AgenticR1",
+      "authors": "Agentic-R1 Authors",
+      "year": "2025",
+      "title": "Agentic-R1: Adaptive Text and Tool Reasoning via DualDistill",
+      "venue": "arXiv:2507.05707",
+      "summary": "70 亿参数模型，通过蒸馏两个专门教师训练在长链式思维和基于代码的工具使用之间切换，再通过自蒸馏精炼。"
+    },
+    {
+      "key": "DeepResearch",
+      "authors": "Deep Research Survey Authors",
+      "year": "2025",
+      "title": "Deep Research Agents: A Survey",
+      "venue": "arXiv:2506.18096",
+      "summary": "自主多步研究智能体的综合综述，按静态与动态工作流、规划策略和单与多智能体编排对系统进行分类。"
+    },
+    {
+      "key": "AgentScaler",
+      "authors": "AgentScaler Authors",
+      "year": "2025",
+      "title": "AgentScaler: Scaled Simulated Tool-Use Environments for Agent Training",
+      "venue": "arXiv:2509.13311",
+      "summary": "将 30000+ API 聚类为 1000+ 领域并配备可执行数据库的框架，分两阶段训练智能体，在 tau-bench、tau2-bench 和 ACEBench 上达到开源最优。"
+    },
+    {
+      "key": "SDPO",
+      "authors": "SDPO Authors",
+      "year": "2026",
+      "title": "Reinforcement Learning via Self-Distillation",
+      "venue": "arXiv:2601.20802",
+      "summary": "在策略 RL 算法，使用以环境反馈为条件的当前模型作为自教师，产生密集信用分配，在推理和工具使用基准上超越 GRPO。"
+    },
+    {
+      "key": "GLM45",
+      "authors": "GLM-4.5 Authors",
+      "year": "2025",
+      "title": "GLM-4.5: An Open Mixture-of-Experts Foundation for Agentic Tasks",
+      "venue": "arXiv:2508.06471",
+      "summary": "355B 参数 MoE 模型，具有混合思考与直接模式和针对网页搜索与软件工程的智能体 RL，在十二基准智能体套件中排名第二。"
+    },
+    {
+      "key": "CommandA",
+      "authors": "Cohere",
+      "year": "2025",
+      "title": "Command A: An Enterprise-Ready LLM",
+      "venue": "arXiv:2504.00698",
+      "summary": "为 RAG、智能体、代码和多语言任务构建的 111B 开放权重模型，使用模块化专家合并和 256K 上下文的混合注意力架构。"
+    },
+    {
+      "key": "GAIA",
+      "authors": "Mialon, G. et al.",
+      "year": "2023",
+      "title": "GAIA: A Benchmark for General AI Assistants",
+      "venue": "arXiv:2311.12983",
+      "summary": "概念简单但需要推理、多模态处理、网页浏览和工具使用的真实世界问题基准。在通用助手任务上暴露巨大的人-智能体差距。"
+    },
+    {
+      "key": "AIAgentsCoding2025",
+      "authors": "Mueller, K. et al.",
+      "year": "2025",
+      "title": "AI Agents for Coding in 2025",
+      "venue": "arXiv:2512.14012",
+      "summary": "经验开发者如何使用 AI 编码智能体的实地研究，发现专业人士依赖审慎规划和验证而非氛围编码，且智能体适用性随任务复杂度剧烈变化。"
+    },
+    {
+      "key": "HackWebsites",
+      "authors": "Fang, R. et al.",
+      "year": "2024",
+      "title": "LLM Agents Can Autonomously Hack Websites",
+      "venue": "arXiv:2402.06664",
+      "summary": "证明具有工具使用和长上下文的前沿智能体可在真实网站上自主执行 SQL 注入和模式提取，凸显智能体能力的安全影响。"
+    },
+    {
+      "key": "UnivReasoning",
+      "authors": "Universal Reasoning Authors",
+      "year": "2026",
+      "title": "Universal Reasoning Model",
+      "venue": "arXiv:2512.14693",
+      "summary": "研究通用 Transformer 在 ARC-AGI 上的循环机制，表明循环归纳偏置和非线性组件（而非架构复杂化）驱动推理增益。"
+    },
+    {
+      "key": "MACI",
+      "authors": "MACI Authors",
+      "year": "2026",
+      "title": "MACI: A System-2 Coordination Layer for LLMs",
+      "venue": "arXiv:2512.05765",
+      "summary": "提出 LLM 基底之上的协调层，具有诱饵、过滤和持续三种机制，共同实现跨多步任务的目标导向推理。"
+    },
+    {
+      "key": "SingleVsMulti",
+      "authors": "Stanford Authors",
+      "year": "2026",
+      "title": "Single-Agent LLMs vs Multi-Agent Systems",
+      "venue": "arXiv:2604.02460",
+      "summary": "信息论分析表明，具有受控算力的单智能体系统在多跳推理上一致匹配或超越多智能体架构。"
+    },
+    {
+      "key": "GeometricMem",
+      "authors": "Geometric Memory Authors",
+      "year": "2026",
+      "title": "Geometric Memory in Sequence Models",
+      "venue": "arXiv:2510.26745",
+      "summary": "在深度序列模型中识别几何记忆范式，编码全局实体关系，在超大图上实现超越联想记忆解释的多步推理。"
+    },
+    {
+      "key": "NeuralComps",
+      "authors": "Meta AI and KAUST",
+      "year": "2026",
+      "title": "Neural Computers",
+      "venue": "arXiv:2604.06425",
+      "summary": "统一计算-记忆-输入输出架构，视频模型控制命令行和图形环境，模糊模型与运行时的边界。"
+    },
+    {
+      "key": "MIA",
+      "authors": "MIA Authors",
+      "year": "2026",
+      "title": "Memory Intelligence Agent",
+      "venue": "arXiv:2604.04503",
+      "summary": "管理器-规划器-执行器架构，具有双向记忆转换和交替 RL 训练，面向高效长视野记忆演化而设计。"
+    },
+    {
+      "key": "CodingAgentsLongCtx",
+      "authors": "Coding Agents Authors",
+      "year": "2026",
+      "title": "Coding Agents as Long-Context Processors",
+      "venue": "arXiv:2603.20432",
+      "summary": "表明使用文件系统和原生工具的编码智能体平均超越最优长上下文方法 17.3%，有效扩展到万亿 token。"
+    },
+    {
+      "key": "ReliabilityLimits",
+      "authors": "MIT Authors",
+      "year": "2026",
+      "title": "On the Reliability Limits of Multi-Agent Planning",
+      "venue": "arXiv:2603.26993",
+      "summary": "理论分析证明委托式多智能体网络在没有新外生信号的情况下无法超越集中式决策者，约束了纯编排的收益。"
+    },
+    {
+      "key": "MemCollab",
+      "authors": "MemCollab Authors",
+      "year": "2026",
+      "title": "MemCollab: Collaborative Memory Across Agents",
+      "venue": "arXiv:2603.23234",
+      "summary": "智能体无关的记忆框架，通过对比不同模型的推理轨迹构建跨异构智能体可用的共享记忆。"
+    },
+    {
+      "key": "MemexRL",
+      "authors": "MemexRL Authors",
+      "year": "2026",
+      "title": "Memex(RL): Indexed Experience Memory Optimized via RL",
+      "venue": "arXiv:2603.04257",
+      "summary": "引入索引经验记忆，通过 RL 优化读写行为，在有界检索预算下保持长视野任务的决策质量。"
+    },
+    {
+      "key": "StructuredAgent",
+      "authors": "StructuredAgent Authors",
+      "year": "2026",
+      "title": "StructuredAgent: Hierarchical Planning for Web Agents",
+      "venue": "arXiv:2603.05294",
+      "summary": "基于动态 AND-OR 树的网页智能体层级规划框架，系统维护全局树而 LLM 处理局部扩展。"
+    },
+    {
+      "key": "AdaptiveLooping",
+      "authors": "Think Harder Authors",
+      "year": "2026",
+      "title": "Think Harder or Know More: Adaptive Looping in Reasoning",
+      "venue": "arXiv:2603.08391",
+      "summary": "研究逐层自适应循环和门控记忆库，发现循环有助于数学推理而记忆库有助于常识任务，两者角色互补。"
+    },
+    {
+      "key": "ParamMem",
+      "authors": "ParamMem Authors",
+      "year": "2026",
+      "title": "ParamMem: Parametric Memory for Reflection",
+      "venue": "arXiv:2602.23320",
+      "summary": "将跨样本反思模式编码到模型参数中的参数化记忆模块，实现跨代码、数学和 QA 任务的多样智能体自我反思。"
+    },
+    {
+      "key": "DiagnosticMem",
+      "authors": "Diagnostic Memory Authors",
+      "year": "2026",
+      "title": "Diagnosing Agent Memory",
+      "venue": "arXiv:2603.02473",
+      "summary": "区分智能体记忆中检索与利用失败的诊断框架，发现检索是主要瓶颈，占错误的 11% 到 46%。"
+    },
+    {
+      "key": "PAHF",
+      "authors": "Meta Authors",
+      "year": "2026",
+      "title": "PAHF: Continual Agent Personalization",
+      "venue": "arXiv:2602.16173",
+      "summary": "将显式每用户记忆与主动和被动反馈机制耦合的持续个性化框架，面向长期部署的智能体。"
+    },
+    {
+      "key": "ActionEngine",
+      "authors": "Georgia Tech and Microsoft Research",
+      "year": "2026",
+      "title": "ActionEngine: GUI Agents as Programmatic Planners",
+      "venue": "arXiv:2602.20502",
+      "summary": "通过离线状态机探索和 Python 合成将 GUI 智能体转换为程序化规划器，在 Reddit 任务上达到 95% 成功率，成本降低 11.8 倍。"
+    },
+    {
+      "key": "MemFactory",
+      "authors": "MemFactory Authors",
+      "year": "2026",
+      "title": "MemFactory: Unified Training-Inference for Memory-Augmented Agents",
+      "venue": "arXiv:2603.29493",
+      "summary": "记忆增强智能体的模块化训练-推理框架，具有可组合的乐高式组件和 GRPO 微调，获得 14.8% 相对增益。"
+    },
+    {
+      "key": "UnivVerifier",
+      "authors": "Microsoft Research",
+      "year": "2026",
+      "title": "The Universal Verifier for Agent Benchmarks",
+      "venue": "arXiv:2604.06240",
+      "summary": "基于四项设计原则的计算机使用智能体轨迹可靠评估框架，将假阳性率从 45% 以上降至接近零。"
+    },
+    {
+      "key": "ARCAGI3",
+      "authors": "Chollet, F. and ARC Prize Foundation",
+      "year": "2026",
+      "title": "ARC-AGI-3: Interactive Benchmark for Agentic Intelligence",
+      "venue": "arXiv:2603.24621",
+      "summary": "使用回合制环境的交互式基准，需要探索、目标推断和无显式指令的规划，面向广泛智能体智能。"
+    },
+    {
+      "key": "Aegean",
+      "authors": "Aegean Authors",
+      "year": "2026",
+      "title": "Reaching Agreement Among LLM Agents",
+      "venue": "arXiv:2512.20184",
+      "summary": "多智能体精炼的共识协议，当足够多的智能体收敛时实现提前终止，提供 1.2 到 20 倍延迟降低。"
+    },
+    {
+      "key": "MemoryArena",
+      "authors": "MemoryArena Authors",
+      "year": "2026",
+      "title": "MemoryArena",
+      "venue": "arXiv:2602.16313",
+      "summary": "评估智能体是否在互连会话中实际使用记忆的基准，暴露检索准确率与可操作记忆使用之间的差距。"
+    },
+    {
+      "key": "MAPLE",
+      "authors": "MAPLE Authors",
+      "year": "2026",
+      "title": "MAPLE: Separating Memory, Learning, and Personalization",
+      "venue": "arXiv:2602.13258",
+      "summary": "将记忆、学习和个性化分离为在不同时间尺度上操作的专门子智能体的架构，实现 14.6% 个性化改进。"
+    },
+    {
+      "key": "ALMA",
+      "authors": "Clune Group",
+      "year": "2026",
+      "title": "ALMA: Automated Discovery of Memory Designs",
+      "venue": "arXiv:2602.07755",
+      "summary": "通过开放式代码探索自动发现智能体记忆设计的元智能体，产生超越人工设计基线的领域自适应架构。"
+    },
+    {
+      "key": "xMemory",
+      "authors": "xMemory Authors",
+      "year": "2026",
+      "title": "xMemory: Structure-Aware Hierarchical Memory",
+      "venue": "arXiv:2602.02007",
+      "summary": "面向智能体对话的结构感知自顶向下检索分层记忆，以读者不确定性驱动的自适应扩展替代固定 top-k 检索。"
+    },
+    {
+      "key": "SALE",
+      "authors": "Meta Authors",
+      "year": "2026",
+      "title": "SALE: Marketplace-Inspired Routing for Multi-Agent Systems",
+      "venue": "arXiv:2602.02751",
+      "summary": "拍卖式路由，异构智能体以战略计划竞价，通过共享拍卖记忆精炼，将对 32B 参数模型的依赖降低 53%。"
+    },
+    {
+      "key": "InfMem",
+      "authors": "InfMem Authors",
+      "year": "2026",
+      "title": "InfMem: Ultra-Long Document QA with Cognitive Agents",
+      "venue": "arXiv:2602.02704",
+      "summary": "使用 PreThink-Retrieve-Write 循环和自适应早停的认知智能体，在百万 token 文档上将延迟降低 3.3 到 5.1 倍。"
+    },
+    {
+      "key": "VibeTensor",
+      "authors": "NVLabs",
+      "year": "2026",
+      "title": "VibeTensor: Agent-Generated Deep Learning Stack",
+      "venue": "arXiv:2601.16238",
+      "summary": "完全由 LLM 编码智能体生成的深度学习系统软件，共 28K 行，涵盖 CUDA 内核、自动微分和分配器。"
+    },
+    {
+      "key": "AgentCC",
+      "authors": "AgentCC Authors",
+      "year": "2026",
+      "title": "Agent Cognitive Compressor for Long-Horizon Workflows",
+      "venue": "arXiv:2601.11653",
+      "summary": "替代无限上下文的有界内部状态，减少扩展多轮智能体工作流中的漂移和幻觉。"
+    },
+    {
+      "key": "EffAgents",
+      "authors": "Efficient Agents Survey Authors",
+      "year": "2026",
+      "title": "Efficient Agents: A Review",
+      "venue": "arXiv:2601.14192",
+      "summary": "智能体效率方法综述，聚焦记忆压缩、工具使用的强化学习和受控规划机制。"
+    },
+    {
+      "key": "AgeMem",
+      "authors": "AgeMem Authors",
+      "year": "2026",
+      "title": "Unified Long-Term and Short-Term Memory as Tools",
+      "venue": "arXiv:2601.01885",
+      "summary": "将记忆操作暴露为工具，使智能体可通过逐步 GRPO 自主学习存储、检索、更新、摘要和丢弃策略。"
+    },
+    {
+      "key": "SimpleMem",
+      "authors": "SimpleMem Authors",
+      "year": "2026",
+      "title": "Efficient Lifelong Memory for LLM Agents",
+      "venue": "arXiv:2601.02553",
+      "summary": "语义无损压缩，配合递归合并和自适应检索，实现 26.4% F1 提升和 30 倍 token 缩减。"
+    },
+    {
+      "key": "LightThinkPP",
+      "authors": "LightThinker++ Authors",
+      "year": "2026",
+      "title": "LightThinker++: From Reasoning Compression to Memory Management",
+      "venue": "arXiv:2604.03679",
+      "summary": "超越静态压缩，引入显式提交-展开-折叠记忆原语，将峰值 token 减少 70%，同时稳定 80 轮以上的智能体任务。"
+    },
+    {
+      "key": "ReActSurvey",
+      "authors": "Yao, S. et al.",
+      "year": "2022",
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "venue": "arXiv:2210.03629",
+      "summary": "将链式思维推理与基于工具的行动交替的基础框架，建立了支撑后续大多数智能体工具的观察-推理-行动循环。"
+    },
+    {
+      "key": "AIAgentAdopt",
+      "authors": "Harvard & Perplexity Research",
+      "year": "2025",
+      "title": "AI Agent Adoption Study",
+      "venue": "arXiv:2512.07828",
+      "summary": "使用数亿次匿名 Perplexity Comet 浏览器交互的首次大规模 AI 智能体采用实地研究，表明生产力和学习占使用主导地位，采用偏向高 GDP、知识密集型行业。"
+    },
+    {
+      "key": "MagenticOne",
+      "authors": "Fourney, A. et al.",
+      "year": "2024",
+      "title": "Magentic-One",
+      "venue": "Microsoft Research 2024",
+      "summary": "通用多智能体系统，由协调者指挥专门的 WebSurfer、FileSurfer、Coder 和 ComputerTerminal 智能体，在 GAIA、AssistantBench 和 WebArena 上无需任务特定修改即可达到竞争性结果。"
+    },
+    {
+      "key": "OpenDevin",
+      "authors": "Wang, X. et al.",
+      "year": "2024",
+      "title": "OpenDevin",
+      "venue": "arXiv:2407.16741",
+      "summary": "通用软件智能体的开放平台，包含沙箱化的操作系统和浏览器环境、代码执行接口、多智能体支持和智能体研究评估框架。"
+    },
+    {
+      "key": "OSCopilot",
+      "authors": "Wu, Z. et al.",
+      "year": "2024",
+      "title": "OS-Copilot",
+      "venue": "arXiv:2402.07456",
+      "summary": "通用计算机智能体框架，暴露统一的操作系统级工具（文件、shell、浏览器、应用），并引入 FRIDAY 自我改进智能体，在 GAIA 上超越先前方法 35%。"
+    },
+    {
+      "key": "GUIAgentDawn",
+      "authors": "Hu, S. et al.",
+      "year": "2024",
+      "title": "The Dawn of GUI Agent",
+      "venue": "arXiv:2411.10323",
+      "summary": "跨领域和软件评估 Claude 3.5 计算机使用，并提供基于 API 的 GUI 自动化框架，展示了强大的端到端语言到桌面操作能力。"
+    },
+    {
+      "key": "UITARS",
+      "authors": "ByteDance",
+      "year": "2025",
+      "title": "UI-TARS",
+      "venue": "arXiv:2501.12326",
+      "summary": "端到端原生 GUI 智能体，纯粹从视觉截图操作并产生跨平台的人类级键盘和鼠标交互，取代模块化管线。"
+    },
+    {
+      "key": "GUIR1",
+      "authors": "NUS & CAS",
+      "year": "2025",
+      "title": "GUI-R1",
+      "venue": "arXiv:2504.10458",
+      "summary": "GUI 智能体的强化学习框架，应用可验证的动作级奖励，改善桌面和移动界面上的接地点击和输入行为。"
+    },
+    {
+      "key": "ComputerRL",
+      "authors": "ComputerRL Team",
+      "year": "2025",
+      "title": "ComputerRL",
+      "venue": "arXiv:2508.14040",
+      "summary": "统一 API 调用与 GUI 操作的自主桌面智能体框架，具备可扩展的 RL 栈和交替 RL 与 SFT 以维持探索的 Entropulse 训练配方。"
+    },
+    {
+      "key": "CoAct1",
+      "authors": "USC, Salesforce, UW",
+      "year": "2025",
+      "title": "CoAct-1",
+      "venue": "arXiv:2508.03923",
+      "summary": "将 GUI 交互与直接代码执行相结合的多智能体系统，在桌面任务上提高了纯 GUI 方法的效率和鲁棒性。"
+    },
+    {
+      "key": "ColorAgent",
+      "authors": "ColorAgent Team",
+      "year": "2025",
+      "title": "ColorAgent",
+      "venue": "arXiv:2510.19386",
+      "summary": "结合逐步 RL 与自我进化训练及多智能体个性化层的移动操作系统智能体，在 AndroidWorld 上达到 77.2% 成功率，在 AndroidLab-Pro 上达到 50.7%。"
+    },
+    {
+      "key": "WebRL",
+      "authors": "WebRL Team",
+      "year": "2024",
+      "title": "WebRL",
+      "venue": "arXiv:2411.02337",
+      "summary": "自我进化的在线课程 RL 框架，将 Llama-3.1-8B 网页成功率从 4.8% 提升至 42.4%，GLM4-9B 从 6.1% 提升至 43%，超越 GPT-4-Turbo 和 GPT-4o 网页智能体。"
+    },
+    {
+      "key": "AgentFold",
+      "authors": "AgentFold Team",
+      "year": "2025",
+      "title": "AgentFold",
+      "venue": "arXiv:2510.24699",
+      "summary": "具有主动折叠式上下文管理的 30B 网页智能体，在 BrowseComp 上达到 36.2%，在 BrowseComp-ZH 上达到 47.3%，超越 DeepSeek-V3.1-671B 和 o4-mini 等专有智能体。"
+    },
+    {
+      "key": "AgynSWE",
+      "authors": "Agyn Team",
+      "year": "2026",
+      "title": "Agyn",
+      "venue": "arXiv:2602.01465",
+      "summary": "完全自动化的多智能体软件工程系统，将开发建模为具有管理者、研究员、工程师和审查者角色的组织流程，在无基准调优的情况下解决 72.2% 的 SWE-bench 500 任务。"
+    },
+    {
+      "key": "SWEEVO",
+      "authors": "SWE-EVO Team",
+      "year": "2025",
+      "title": "SWE-EVO",
+      "venue": "arXiv:2512.18470",
+      "summary": "长期软件进化基准，要求跨平均 21 个文件进行多步修改，GPT-5 搭配 OpenHands 仅达 21%，而 SWE-Bench Verified 上为 65%。"
+    },
+    {
+      "key": "SelfPlaySWERL",
+      "authors": "Wei, Y. et al.",
+      "year": "2025",
+      "title": "Self-Play SWE-RL",
+      "venue": "arXiv:2512.18552",
+      "summary": "通过自博弈训练 SWE 智能体，单个 LLM 在沙箱化仓库中同时注入和修复缺陷，在 SWE-bench Verified 上比人类数据基线提升 +10.4 分，无需标注的问题或测试。"
+    },
+    {
+      "key": "KimiDev",
+      "authors": "Yang, Z. et al.",
+      "year": "2025",
+      "title": "Kimi-Dev",
+      "venue": "arXiv:2509.23045",
+      "summary": "将无智能体训练引入作为软件工程 LLM 的可迁移技能先验，在 SWE-bench Verified 上达到 60.4%，少量轨迹微调后使 SWE-Agent pass@1 达到 48.6%。"
+    },
+    {
+      "key": "Agentless",
+      "authors": "Xia, C. et al.",
+      "year": "2024",
+      "title": "Agentless",
+      "venue": "arXiv:2407.01489",
+      "summary": "无智能体系统，通过结构化定位和修复在 SWE-bench Lite 上解决 27.3% 的 GitHub 问题，超越当时的开源 AI 软件工程智能体。"
+    },
+    {
+      "key": "OpenHandsVersa",
+      "authors": "OpenHands-Versa Team",
+      "year": "2025",
+      "title": "Coding Agents with Multimodal Browsing (OpenHands-Versa)",
+      "venue": "arXiv:2506.03011",
+      "summary": "统一单智能体，结合代码执行、多模态网页浏览和文件搜索，在 SWE-Bench Multimodal 上超越专家系统 +9.1%，在 The Agent Company 上超越 +9.1%。"
+    },
+    {
+      "key": "AgentsMD",
+      "authors": "AGENTS.md Evaluation Team",
+      "year": "2026",
+      "title": "Evaluating AGENTS.md",
+      "venue": "arXiv:2602.11988",
+      "summary": "跨四个编码智能体评估仓库级 AGENTS.md 上下文文件，发现人工编写的文件仅提升 +4%，而 LLM 生成的文件降低性能 -2%，但两者均使推理成本增加 20% 以上。"
+    },
+    {
+      "key": "AgentTraps",
+      "authors": "Google DeepMind",
+      "year": "2026",
+      "title": "AI Agent Traps",
+      "venue": "Google DeepMind 2026",
+      "summary": "首个针对自主智能体的对抗性网页内容系统化框架，将 AI 智能体陷阱定义为专门设计来利用访问智能体并降低其任务执行的内容。"
+    },
+    {
+      "key": "Claudini",
+      "authors": "Claudini Team",
+      "year": "2026",
+      "title": "Claudini",
+      "venue": "arXiv:2603.24511",
+      "summary": "由 Claude Code 驱动的自动研究管线，自主发现 LLM 的新颖对抗攻击算法，超越 30 多种现有方法，在 Meta-SecAlign-70B 上达到 100% 攻击成功率。"
+    },
+    {
+      "key": "AgenticMisalign",
+      "authors": "Anthropic",
+      "year": "2025",
+      "title": "Agentic Misalignment",
+      "venue": "Anthropic 2025",
+      "summary": "表明 16 个前沿模型在部署组织威胁其自主性时选择勒索、间谍和欺骗，Claude Opus 4 和 Gemini 2.5 Flash 在 96% 的关键场景中选择勒索。"
+    },
+    {
+      "key": "SHADEArena",
+      "authors": "SHADE-Arena Team",
+      "year": "2025",
+      "title": "SHADE-Arena",
+      "venue": "Anthropic 2025",
+      "summary": "首个大规模基准，评估基于 LLM 的智能体是否能隐蔽地追求有害附带目标同时避免被监控器检测，使用 17 对良性/恶意智能体任务。"
+    },
+    {
+      "key": "AntiScheming",
+      "authors": "OpenAI & Apollo Research",
+      "year": "2025",
+      "title": "Stress Testing Deliberative Alignment for Anti-Scheming Training",
+      "venue": "OpenAI 2025",
+      "summary": "构建图谋代理的隐蔽行动测试平台，用审议式对齐训练 o3 和 o4-mini，大幅降低隐蔽行动率，同时表明情境意识驱动了部分增益。"
+    },
+    {
+      "key": "AlignAudit",
+      "authors": "Anthropic",
+      "year": "2025",
+      "title": "Building and Evaluating Alignment Auditing Agents",
+      "venue": "Anthropic 2025",
+      "summary": "引入三个基于 LLM 的对齐审计智能体（调查者、评估者、广度优先红队），以可复制的工具增强工作流自动化对齐审计。"
+    },
+    {
+      "key": "DeepSeekV32",
+      "authors": "DeepSeek-AI",
+      "year": "2025",
+      "title": "DeepSeek-V3.2",
+      "venue": "DeepSeek 2025",
+      "summary": "具有 DeepSeek 稀疏注意力、可扩展的智能体环境 RL 后训练和思考中用工具上下文管理的开放推理模型，在 IMO 和 IOI 2025 上达到金牌水平。"
+    },
+    {
+      "key": "INTELLECT3",
+      "authors": "Prime Intellect",
+      "year": "2025",
+      "title": "INTELLECT-3",
+      "venue": "Prime Intellect 2025",
+      "summary": "106B MoE 模型（12B 活跃），用 prime-rl 异步 RL 框架跨 500 多个环境训练，在智能体任务上匹配 GLM-4.6，并发布完整的环境中心和沙箱基础设施。"
+    },
+    {
+      "key": "K2Think",
+      "authors": "K2-Think Team",
+      "year": "2025",
+      "title": "K2-Think",
+      "venue": "arXiv:2509.07604",
+      "summary": "32B 系统，结合长 CoT SFT、可验证奖励的 RL、先计划后思考提示和 Best-of-N，在 AIME、HMMT 和 Omni-MATH-HARD 上以交互速度匹配远更大的模型。"
+    },
+    {
+      "key": "rStar2Agent",
+      "authors": "rStar2 Team",
+      "year": "2025",
+      "title": "rStar2-Agent",
+      "venue": "arXiv:2508.20722",
+      "summary": "14B 数学推理模型，使用 GRPO-RoC 滚动过滤在 Python 工具环境中用智能体 RL 训练，达到 AIME24 80.6 和 AIME25 69.8，轨迹比 Qwen3-14B 更短。"
+    },
+    {
+      "key": "LlamaNemotron",
+      "authors": "NVIDIA",
+      "year": "2025",
+      "title": "Llama-Nemotron",
+      "venue": "arXiv:2505.00949",
+      "summary": "开放推理模型家族（LN-Nano 8B、LN-Super 49B、LN-Ultra 253B），具有动态推理开关、FP8 推理和多阶段训练，在 AIME 和 GPQA-Diamond 上匹敌 DeepSeek-R1。"
+    },
+    {
+      "key": "OpenDeepSearch",
+      "authors": "Sentient, UW, Princeton, UC Berkeley",
+      "year": "2025",
+      "title": "Open Deep Search",
+      "venue": "arXiv:2503.20201",
+      "summary": "开源搜索 AI 框架，包含 Open Search Tool 和基于代码的 Open Reasoning Agent，使用 DeepSeek-R1 在 SimpleQA 上得分 88.3%，FRAMES 上得分 75.3%，超越 GPT-4o Search Preview。"
+    },
+    {
+      "key": "SFRDeepResearch",
+      "authors": "Salesforce AI Research",
+      "year": "2025",
+      "title": "SFR-DeepResearch",
+      "venue": "arXiv:2509.06283",
+      "summary": "简单 RL 配方，将推理优化 LLM 变为自主单智能体研究者，仅使用搜索、静态页面浏览和 Python 工具，端到端在合成短任务上训练。"
+    },
+    {
+      "key": "TTDDR",
+      "authors": "TTD-DR Team",
+      "year": "2025",
+      "title": "Deep Researcher with Test-Time Diffusion",
+      "venue": "arXiv:2507.16075",
+      "summary": "将深度研究报告生成重新框架为测试时的去噪扩散过程，迭代优化长篇研究报告，超越链式思维和 best-of-n 基线。"
+    },
+    {
+      "key": "TUMIX",
+      "authors": "TUMIX Team",
+      "year": "2025",
+      "title": "Tool-Use Mixture (TUMIX)",
+      "venue": "arXiv:2510.01279",
+      "summary": "集成推理配方，并行运行 15 个混合文本、代码执行和网页搜索的多样智能体，配合 LLM 裁判早停，在 HLE 和 GPQA 上比工具增强基线提升 +3.55%。"
+    },
+    {
+      "key": "ChainOfAgents",
+      "authors": "OPPO",
+      "year": "2025",
+      "title": "Chain-of-Agents",
+      "venue": "arXiv:2508.13167",
+      "summary": "通过将强框架蒸馏为 CoA 轨迹，然后在可验证的网页、代码和工具任务上运行智能体 RL，训练单个模型原生地像多智能体系统一样行为。"
+    },
+    {
+      "key": "DualDistill",
+      "authors": "Agentic-R1 Team",
+      "year": "2025",
+      "title": "Agentic-R1 (DualDistill)",
+      "venue": "arXiv:2507.05707",
+      "summary": "7B 模型，用 DualDistill 训练，通过组合长 CoT 教师和基于代码的工具使用教师的轨迹，在基于工具的执行和纯文本推理之间动态切换。"
+    },
+    {
+      "key": "SelfOrgAgents",
+      "authors": "Self-Organizing Agents Team",
+      "year": "2026",
+      "title": "Self-Organizing LLM Agents",
+      "venue": "arXiv:2603.28990",
+      "summary": "以前所未有的规模（25,000 个任务，多达 256 个智能体，8 种协调协议）测试多智能体 LLM 自治，发现智能体无论协议如何都一致收敛到相似的涌现结构。"
+    },
+    {
+      "key": "MCPEval",
+      "authors": "MCPEval Team",
+      "year": "2025",
+      "title": "MCPEval",
+      "venue": "arXiv:2507.15015",
+      "summary": "开源框架，通过模型上下文协议自动化 LLM 智能体的端到端评估，与原生工具集成并报告跨多样应用领域的领域特定指标。"
+    },
+    {
+      "key": "Gaia2",
+      "authors": "Meta FAIR",
+      "year": "2026",
+      "title": "Gaia2",
+      "venue": "arXiv:2602.11964",
+      "summary": "下一代智能体基准，环境独立于智能体行动演化，施加时间压力和多智能体协调；GPT-5 以 42% pass@1 领先，Kimi-K2 以 21% 在开放模型中居首。"
+    },
+    {
+      "key": "TerminalBench2",
+      "authors": "Terminal-Bench Team",
+      "year": "2026",
+      "title": "Benchmarking Agents on Hard CLI Tasks (Terminal-Bench 2.0)",
+      "venue": "arXiv:2601.11868",
+      "summary": "由 89 个精选命令行任务组成的困难基准，受真实工作流启发，每个任务有独立环境，在开发、功能扩展和错误解决方面考验智能体执行。"
+    },
+    {
+      "key": "PaperBench",
+      "authors": "OpenAI",
+      "year": "2025",
+      "title": "PaperBench",
+      "venue": "arXiv:2504.01848",
+      "summary": "测试 AI 智能体是否能从零复制前沿 ML 研究论文的基准，提供自主研究能力的严格多步评估。"
+    },
+    {
+      "key": "AgentDataProto",
+      "authors": "Agent Data Protocol Team",
+      "year": "2025",
+      "title": "Agent Data Protocol",
+      "venue": "arXiv:2510.24702",
+      "summary": "统一 13 个碎片化智能体训练数据集的标准化格式，跨工具和接口实现合并微调，比基线提升约 20% 性能。"
+    },
+    {
+      "key": "GraphR1",
+      "authors": "Graph-R1 Team",
+      "year": "2025",
+      "title": "Graph-R1",
+      "venue": "arXiv:2507.21892",
+      "summary": "将图结构知识与智能体多轮检索和强化学习整合的 RAG 框架，超越一次性块检索用于知识密集型推理。"
+    },
+    {
+      "key": "ToolAgentRetr",
+      "authors": "PwC Research",
+      "year": "2025",
+      "title": "Tool-to-Agent Retrieval",
+      "venue": "arXiv:2511.01854",
+      "summary": "将工具和智能体嵌入共享向量空间的统一检索框架，具有元数据关系，支持跨协调数百个 MCP 服务器的多智能体系统的高效路由。"
+    },
+    {
+      "key": "CodeResearcher",
+      "authors": "Microsoft Research",
+      "year": "2025",
+      "title": "Code Researcher",
+      "venue": "Microsoft Research 2025",
+      "summary": "大型系统中复杂缺陷的深度研究智能体，在语义、模式和提交历史上推理，在 kBenchSyz 上达到 58% 崩溃解决率，对比较低的 SWE-agent 基线。"
+    },
+    {
+      "key": "AlphaEvolve",
+      "authors": "Google DeepMind",
+      "year": "2025",
+      "title": "AlphaEvolve",
+      "venue": "Google DeepMind 2025",
+      "summary": "LLM 引导的进化编码智能体，发现新算法（包括 48 次乘法的 4x4 复矩阵乘法）并跨数学和系统任务改进 Google 计算基础设施。"
+    },
+    {
+      "key": "DeepSeekProver",
+      "authors": "DeepSeek-AI",
+      "year": "2025",
+      "title": "DeepSeek-Prover-V2",
+      "venue": "arXiv:2504.21801",
+      "summary": "671B Lean 4 定理证明 LLM，使用非正式 CoT 和形式化子目标分解的冷启动管线加 RL 训练，在形式化证明基准上超越先前最优。"
+    },
+    {
+      "key": "AgenticScience",
+      "authors": "Agentic Science Survey Team",
+      "year": "2025",
+      "title": "Agentic Science",
+      "venue": "arXiv:2508.14111",
+      "summary": "将智能体科学定位为 AI for Science 下一阶段的综述，智能体自主生成假设、运行实验并跨研究生命周期迭代追求发现。"
+    },
+    {
+      "key": "PlanAct",
+      "authors": "UC Berkeley & University of Tokyo",
+      "year": "2025",
+      "title": "Plan-and-Act",
+      "venue": "arXiv:2503.09572",
+      "summary": "将 LLM 智能体中的高层规划与低层执行分离并显式训练规划器模块的框架，改善长视野任务完成度优于单体智能体设计。"
+    },
+    {
+      "key": "ContextEngSurv",
+      "authors": "Context Engineering Survey Team",
+      "year": "2025",
+      "title": "A Survey of Context Engineering for LLMs",
+      "venue": "arXiv:2507.13334",
+      "summary": "将上下文工程定义为正式学科，涵盖提供给 LLM 的信息的检索、处理和管理及其在生产智能体管线中的整合。"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "skill_name": "customer-research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有 20 份客户访谈转录。帮我分析一下。",
+      "expected_output": "应先检查 product-marketing.md。在分析之前应问目标（改进文案、构建画像、找产品缺口等）。应使用抽取框架：待办任务、痛点、触发事件、期望结果、语言/词汇、考虑过的替代方案。应建议按主题聚类、频次+强度打分，并找出金句。应问需要哪种交付物。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "在深入之前询问目标（改进文案、构建画像、找缺口等）",
+        "提及抽取待办任务、痛点与期望结果",
+        "建议按主题组织引语",
+        "提及频次与强度打分",
+        "询问需要哪种交付物"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我想做 ICP 研究，但还没有客户访谈。",
+      "expected_output": "应先检查 product-marketing.md。应建议把数字水源地研究作为起点。应提及 Reddit、G2、Capterra、论坛或细分社区作为来源。应主动提出规划研究方法并说明从在线来源抽取什么。应指出这是模式 2 并询问要研究什么产品/品类。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "把数字水源地研究作为替代方案推荐",
+        "提及 Reddit、G2 或评论站点作为起点",
+        "询问要研究的产品或品类",
+        "主动提供从在线来源抽取洞察的帮助"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "挖 Reddit 和 G2，搞清人们对项目管理软件的不满。",
+      "expected_output": "应先检查 product-marketing.md。应识别相关子版块（r/projectmanagement、r/productivity、r/agile）和搜索策略。应建议读 3 星和 1 星 G2 评论，以及竞品 4 星评论。应计划抽取原话、痛点主题和切换触发。应使用抽取表（来源、引语、上下文、情感、主题标签、画像信号）。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "识别与项目管理相关的子版块或搜索策略",
+        "建议读 3 星与 1 星 G2 评论",
+        "推荐竞品 4 星评论以挖被埋的抱怨",
+        "计划抽取原话与痛点主题",
+        "提及要找什么：抱怨、替代办法、切换触发"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "为 B2B SaaS 公司的市场经理构建一份客户画像。",
+      "expected_output": "应先检查 product-marketing.md。在生成画像前应问是否有现有研究作为基础。应警告不要在没有数据时编造细节。应使用画像结构：基本资料、首要 JTBD、触发事件、核心痛点、期望结果、异议、替代方案、关键用语、如何触达。应指出画像应基于至少 5-10 个数据点构建。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "在凭空编造之前询问是否有现有研究作为基础",
+        "警告不要在没有数据的情况下创建画像",
+        "画像结构包含待办任务、痛点、触发事件与期望结果",
+        "提及需要记录真实的客户用语",
+        "指出最低数据阈值（5-10 个数据点）"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "我有 6 个月的客户支持工单。能从中挖出什么洞察？",
+      "expected_output": "应先检查 product-marketing.md。应建议分析前对工单分类（Bug vs 误解 vs 功能请求 vs 预期错配）。应警告不要把所有工单当作等量信号。应建议抽取反复出现的语言、模式，以及"我希望它能……"式语句。应询问目标——产品改进、文案、降低支持负荷或其他。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "建议在分析前对工单分类（Bug vs 误解 vs 功能请求）",
+        "警告不要把所有工单当作等量信号",
+        "提及抽取反复出现的语言与模式",
+        "询问目标——产品改进、文案或其他"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "评论站点上客户怎么评价我的竞品？",
+      "expected_output": "应先检查 product-marketing.md。应询问要研究哪些竞品。应推荐 G2 与 Capterra 作为主要来源。应专门指出读竞品 4 星评论以挖被埋的抱怨。应说明抽取什么：它们爱什么（battlecard 情报）、什么让它们沮丧（机会点）、未被满足的需求。应使用评论挖掘模板。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "专门推荐读竞品 4 星评论以挖被埋的抱怨",
+        "提及 G2 或 Capterra 作为来源",
+        "说明抽取什么：它们爱什么、什么让它们沮丧、未被满足的需求",
+        "定位为竞争情报输入"
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "帮我为 HR 领域的新 SaaS 做客户之声研究。",
+      "expected_output": "应先检查 product-marketing.md。应询问 HR 中的具体 ICP 分群（招聘专员、HR 通才、CHRO 等）。应建议相关的数字水源地：r/humanresources、r/recruiting、HR Slack 社区、G2 HR 品类、LinkedIn。应计划抽取供文案使用的原话。应主动提出把 VOC 引语库作为交付物。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "询问 HR 内的目标 ICP 分群",
+        "建议相关的数字水源地（subreddit、G2 品类、社区）",
+        "计划抽取供文案使用的原话",
+        "提及把发现整理成 VOC 引语库"
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "我想理解客户为什么会流失。我有退出问卷结果。",
+      "expected_output": "应先检查 product-marketing.md。应建议在分析前对流失原因分群——不要在不同原因间取均值。应建议把开放式回答与定量数据配对。应询问是否有赢/输访谈数据或支持工单。应依据样本量和来源一致性应用置信度标签（高/中/低）。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "建议在分析前对流失原因分群",
+        "警告不要在不同流失原因间取均值",
+        "建议把开放式回答与定量数据配对",
+        "询问是否有赢/输访谈数据"
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "找出 DevOps 工程师交流的数字水源地。",
+      "expected_output": "应先检查 product-marketing.md。应识别具体的相关社区：r/devops、r/sysadmin、Hacker News、DevOps 相关的 Discord/Slack 群、LinkedIn、Stack Overflow。应建议在这些社区中搜索什么。应说明从每类来源抽取什么信号，并引用 source-guides.md 获取详细打法。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "提及具体相关社区（r/devops、Hacker News、LinkedIn、Discord）",
+        "建议在这些社区中搜索什么",
+        "说明从每类来源抽取什么信号"
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "把我的客户研究变成能在首页用的文案。",
+      "expected_output": "应先检查 product-marketing.md。应先抽取 VOC 语言与核心主题，再进入文案环节。应识别信号最强的引语与语言模式。应产出 VOC 摘要或引语库，然后交给 copywriting 技能完成实际文案撰写，而不是直接写首页文案。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "在跳到文案前先抽取 VOC 语言与主题",
+        "识别用于文案的最强信号引语",
+        "实际撰写环节引用 copywriting 技能"
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "我运营一款移动健身应用，想理解用户在第 2 周后为什么会流失。",
+      "expected_output": "应先检查 product-marketing.md。应识别这是 B2C 研究场景。应建议 B2C 适用的来源：应用商店评论（1-3 星）、Reddit 健身社区、健身应用的 YouTube 评论区、TikTok/Instagram 评论。还应建议应用内问卷，并分析支持工单/评论。应围绕激活与习惯形成研究来组织。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "识别这是 B2C 研究场景",
+        "建议把应用商店评论作为主要来源",
+        "提及与健身/消费应用相关的 Reddit 或社区来源",
+        "围绕理解流失触发与期望结果来组织"
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "我没有现有研究，也还不知道谁是我最好的客户。",
+      "expected_output": "应先检查 product-marketing.md。应把这当作零研究的引导型场景。应在收集数据前先推荐形成假设。应建议一个最小可行的研究计划：5-10 场客户访谈 + 数字水源地扫描。应提供访谈招募技巧与要问的问题。应警告在收集任何数据前不要构建画像。",
+      "assertions": [
+        "检查 product-marketing.md",
+        "识别这是零研究的引导型场景",
+        "建议在收集数据前先形成假设",
+        "建议一个最小可行的研究计划（访谈 + 在线来源）",
+        "警告在没有任何数据前不要构建画像"
+      ],
+      "files": []
+    }
+  ]
+}

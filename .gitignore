@@ -1,0 +1,26 @@
+# IDE workspace-private directory (rules / skills / specs / memory — NEVER commit)
+.trae/
+.trae/**
+
+# Local continuity ledger system (workspace-private, NEVER commit)
+doc/
+doc/**
+
+# Root-level skills/ directory — DELETED (skills now in 反重力 - 超强技能 - 中文/skills/)
+# Note: leading "/" anchors to repo root, so 反重力 - 超强技能 - 中文/skills/ is NOT ignored
+/skills/
+/skills/**
+
+# Local agent / Claude config (workspace-private, NEVER commit)
+AGENTS.md
+CLAUDE.md
+CLAUDE.local.md
+CODE_WIKI.md
+
+# Translation workflow tool (private, NOT open-sourced)
+skill-cn/
+skill-cn/**
+
+# Archives (private backups, NEVER commit)
+archives/
+archives/**

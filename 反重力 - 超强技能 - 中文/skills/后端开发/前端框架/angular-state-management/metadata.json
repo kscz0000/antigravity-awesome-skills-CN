@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "organization": "Antigravity Awesome Skills",
+  "date": "2026年2月",
+  "abstract": "为 AI 智能体和 LLM 设计的 Angular 应用完整状态管理指南。涵盖基于 Signal 的服务、全局状态的 NgRx、RxJS 模式和组件存储。包含选择正确解决方案的决策树、从 BehaviorSubject 迁移到 Signals 的迁移模式，以及桥接 Signals 与 RxJS observable 的策略。",
+  "references": [
+    "https://angular.dev/guide/signals",
+    "https://ngrx.io",
+    "https://ngrx.io/guide/signals",
+    "https://www.rx-angular.io",
+    "https://github.com/ngrx/platform"
+  ]
+}

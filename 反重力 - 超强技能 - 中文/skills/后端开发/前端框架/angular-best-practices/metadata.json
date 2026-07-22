@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "organization": "Antigravity Awesome Skills",
+  "date": "2026年2月",
+  "abstract": "为 AI 智能体和 LLM 设计的 Angular 应用性能优化与最佳实践指南。涵盖变更检测策略（OnPush、Signals、Zoneless）、避免异步瀑布流、通过懒加载和 @defer 进行包优化、渲染性能、SSR/水合模式以及内存管理。按影响程度从关键到增量改进进行优先级排序。",
+  "references": [
+    "https://angular.dev/best-practices",
+    "https://angular.dev/guide/performance",
+    "https://angular.dev/guide/zoneless",
+    "https://angular.dev/guide/ssr",
+    "https://web.dev/performance"
+  ]
+}

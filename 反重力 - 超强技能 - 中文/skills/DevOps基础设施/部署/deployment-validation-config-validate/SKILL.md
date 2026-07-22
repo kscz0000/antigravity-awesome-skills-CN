@@ -1,0 +1,507 @@
+---
+name: deployment-validation-config-validate
+description: "配置管理专家，专注于验证、测试和确保应用配置的正确性。创建全面的验证模式、实现配置测试策略，确保配置在所有环境中安全、一致且无错误。当用户要求'配置验证'、'配置测试'、'配置检查'、'配置模式'或'配置安全'时使用。"
+risk: critical
+source: community
+date_added: "2026-02-27"
+---
+
+# 配置验证
+
+你是配置管理专家，专注于验证、测试和确保应用配置的正确性。创建全面的验证模式、实现配置测试策略，确保配置在所有环境中安全、一致且无错误。
+
+## 使用时机
+
+- 处理配置验证任务或工作流时
+- 需要配置验证的指导、最佳实践或检查清单时
+
+## 不适用场景
+
+- 任务与配置验证无关时
+- 需要此范围之外的其他领域或工具时
+
+## 上下文
+
+用户需要验证配置文件、实现配置模式、确保跨环境一致性，并防止配置相关错误。重点在于创建健壮的验证规则、类型安全、安全检查和自动化验证流程。
+
+## 需求
+
+$ARGUMENTS
+
+## 指令
+
+### 1. 配置分析
+
+分析现有配置结构并识别验证需求：
+
+```python
+import os
+import yaml
+import json
+from pathlib import Path
+from typing import Dict, List, Any
+
+class ConfigurationAnalyzer:
+    def analyze_project(self, project_path: str) -> Dict[str, Any]:
+        analysis = {
+            'config_files': self._find_config_files(project_path),
+            'security_issues': self._check_security_issues(project_path),
+            'consistency_issues': self._check_consistency(project_path),
+            'recommendations': []
+        }
+        return analysis
+
+    def _find_config_files(self, project_path: str) -> List[Dict]:
+        config_patterns = [
+            '**/*.json', '**/*.yaml', '**/*.yml', '**/*.toml',
+            '**/*.ini', '**/*.env*', '**/config.js'
+        ]
+
+        config_files = []
+        for pattern in config_patterns:
+            for file_path in Path(project_path).glob(pattern):
+                if not self._should_ignore(file_path):
+                    config_files.append({
+                        'path': str(file_path),
+                        'type': self._detect_config_type(file_path),
+                        'environment': self._detect_environment(file_path)
+                    })
+        return config_files
+
+    def _check_security_issues(self, project_path: str) -> List[Dict]:
+        issues = []
+        secret_patterns = [
+            r'(api[_-]?key|apikey)',
+            r'(secret|password|passwd)',
+            r'(token|auth)',
+            r'(aws[_-]?access)'
+        ]
+
+        for config_file in self._find_config_files(project_path):
+            content = Path(config_file['path']).read_text()
+            for pattern in secret_patterns:
+                if re.search(pattern, content, re.IGNORECASE):
+                    if self._looks_like_real_secret(content, pattern):
+                        issues.append({
+                            'file': config_file['path'],
+                            'type': 'potential_secret',
+                            'severity': 'high'
+                        })
+        return issues
+```
+
+### 2. 模式验证
+
+使用 JSON Schema 实现配置模式验证：
+
+```typescript
+import Ajv from 'ajv';
+import ajvFormats from 'ajv-formats';
+import { JSONSchema7 } from 'json-schema';
+
+interface ValidationResult {
+  valid: boolean;
+  errors?: Array<{
+    path: string;
+    message: string;
+    keyword: string;
+  }>;
+}
+
+export class ConfigValidator {
+  private ajv: Ajv;
+
+  constructor() {
+    this.ajv = new Ajv({
+      allErrors: true,
+      strict: false,
+      coerceTypes: true
+    });
+    ajvFormats(this.ajv);
+    this.addCustomFormats();
+  }
+
+  private addCustomFormats() {
+    this.ajv.addFormat('url-https', {
+      type: 'string',
+      validate: (data: string) => {
+        try {
+          return new URL(data).protocol === 'https:';
+        } catch { return false; }
+      }
+    });
+
+    this.ajv.addFormat('port', {
+      type: 'number',
+      validate: (data: number) => data >= 1 && data <= 65535
+    });
+
+    this.ajv.addFormat('duration', {
+      type: 'string',
+      validate: /^\d+[smhd]$/
+    });
+  }
+
+  validate(configData: any, schemaName: string): ValidationResult {
+    const validate = this.ajv.getSchema(schemaName);
+    if (!validate) throw new Error(`Schema '${schemaName}' not found`);
+
+    const valid = validate(configData);
+
+    if (!valid && validate.errors) {
+      return {
+        valid: false,
+        errors: validate.errors.map(error => ({
+          path: error.instancePath || '/',
+          message: error.message || 'Validation error',
+          keyword: error.keyword
+        }))
+      };
+    }
+    return { valid: true };
+  }
+}
+
+// Example schema
+export const schemas = {
+  database: {
+    type: 'object',
+    properties: {
+      host: { type: 'string', format: 'hostname' },
+      port: { type: 'integer', format: 'port' },
+      database: { type: 'string', minLength: 1 },
+      user: { type: 'string', minLength: 1 },
+      password: { type: 'string', minLength: 8 },
+      ssl: {
+        type: 'object',
+        properties: {
+          enabled: { type: 'boolean' }
+        },
+        required: ['enabled']
+      }
+    },
+    required: ['host', 'port', 'database', 'user', 'password']
+  }
+};
+```
+
+### 3. 环境特定验证
+
+```python
+from typing import Dict, List, Any
+
+class EnvironmentValidator:
+    def __init__(self):
+        self.environments = ['development', 'staging', 'production']
+        self.environment_rules = {
+            'development': {
+                'allow_debug': True,
+                'require_https': False,
+                'min_password_length': 8
+            },
+            'production': {
+                'allow_debug': False,
+                'require_https': True,
+                'min_password_length': 16,
+                'require_encryption': True
+            }
+        }
+
+    def validate_config(self, config: Dict, environment: str) -> List[Dict]:
+        if environment not in self.environment_rules:
+            raise ValueError(f"Unknown environment: {environment}")
+
+        rules = self.environment_rules[environment]
+        violations = []
+
+        if not rules['allow_debug'] and config.get('debug', False):
+            violations.append({
+                'rule': 'no_debug_in_production',
+                'message': 'Debug mode not allowed in production',
+                'severity': 'critical'
+            })
+
+        if rules['require_https']:
+            urls = self._extract_urls(config)
+            for url_path, url in urls:
+                if url.startswith('http://') and 'localhost' not in url:
+                    violations.append({
+                        'rule': 'require_https',
+                        'message': f'HTTPS required for {url_path}',
+                        'severity': 'high'
+                    })
+
+        return violations
+```
+
+### 4. 配置测试
+
+```typescript
+import { describe, it, expect } from '@jest/globals';
+import { ConfigValidator } from './config-validator';
+
+describe('Configuration Validation', () => {
+  let validator: ConfigValidator;
+
+  beforeEach(() => {
+    validator = new ConfigValidator();
+  });
+
+  it('should validate database config', () => {
+    const config = {
+      host: 'localhost',
+      port: 5432,
+      database: 'myapp',
+      user: 'dbuser',
+      password: 'securepass123'
+    };
+
+    const result = validator.validate(config, 'database');
+    expect(result.valid).toBe(true);
+  });
+
+  it('should reject invalid port', () => {
+    const config = {
+      host: 'localhost',
+      port: 70000,
+      database: 'myapp',
+      user: 'dbuser',
+      password: 'securepass123'
+    };
+
+    const result = validator.validate(config, 'database');
+    expect(result.valid).toBe(false);
+  });
+});
+```
+
+### 5. 运行时验证
+
+```typescript
+import { EventEmitter } from 'events';
+import * as chokidar from 'chokidar';
+
+export class RuntimeConfigValidator extends EventEmitter {
+  private validator: ConfigValidator;
+  private currentConfig: any;
+
+  async initialize(configPath: string): Promise<void> {
+    this.currentConfig = await this.loadAndValidate(configPath);
+    this.watchConfig(configPath);
+  }
+
+  private async loadAndValidate(configPath: string): Promise<any> {
+    const config = await this.loadConfig(configPath);
+
+    const validationResult = this.validator.validate(
+      config,
+      this.detectEnvironment()
+    );
+
+    if (!validationResult.valid) {
+      this.emit('validation:error', {
+        path: configPath,
+        errors: validationResult.errors
+      });
+
+      if (!this.isDevelopment()) {
+        throw new Error('Configuration validation failed');
+      }
+    }
+
+    return config;
+  }
+
+  private watchConfig(configPath: string): void {
+    const watcher = chokidar.watch(configPath, {
+      persistent: true,
+      ignoreInitial: true
+    });
+
+    watcher.on('change', async () => {
+      try {
+        const newConfig = await this.loadAndValidate(configPath);
+
+        if (JSON.stringify(newConfig) !== JSON.stringify(this.currentConfig)) {
+          this.emit('config:changed', {
+            oldConfig: this.currentConfig,
+            newConfig
+          });
+          this.currentConfig = newConfig;
+        }
+      } catch (error) {
+        this.emit('config:error', { error });
+      }
+    });
+  }
+}
+```
+
+### 6. 配置迁移
+
+```python
+from typing import Dict
+from abc import ABC, abstractmethod
+import semver
+
+class ConfigMigration(ABC):
+    @property
+    @abstractmethod
+    def version(self) -> str:
+        pass
+
+    @abstractmethod
+    def up(self, config: Dict) -> Dict:
+        pass
+
+    @abstractmethod
+    def down(self, config: Dict) -> Dict:
+        pass
+
+class ConfigMigrator:
+    def __init__(self):
+        self.migrations: List[ConfigMigration] = []
+
+    def migrate(self, config: Dict, target_version: str) -> Dict:
+        current_version = config.get('_version', '0.0.0')
+
+        if semver.compare(current_version, target_version) == 0:
+            return config
+
+        result = config.copy()
+        for migration in self.migrations:
+            if (semver.compare(migration.version, current_version) > 0 and
+                semver.compare(migration.version, target_version) <= 0):
+                result = migration.up(result)
+                result['_version'] = migration.version
+
+        return result
+```
+
+### 7. 安全配置
+
+```typescript
+import * as crypto from 'crypto';
+
+interface EncryptedValue {
+  encrypted: true;
+  value: string;
+  algorithm: string;
+  iv: string;
+  authTag?: string;
+}
+
+export class SecureConfigManager {
+  private encryptionKey: Buffer;
+
+  constructor(masterKey: string) {
+    this.encryptionKey = crypto.pbkdf2Sync(masterKey, 'config-salt', 100000, 32, 'sha256');
+  }
+
+  encrypt(value: any): EncryptedValue {
+    const algorithm = 'aes-256-gcm';
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(algorithm, this.encryptionKey, iv);
+
+    let encrypted = cipher.update(JSON.stringify(value), 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+
+    return {
+      encrypted: true,
+      value: encrypted,
+      algorithm,
+      iv: iv.toString('hex'),
+      authTag: cipher.getAuthTag().toString('hex')
+    };
+  }
+
+  decrypt(encryptedValue: EncryptedValue): any {
+    const decipher = crypto.createDecipheriv(
+      encryptedValue.algorithm,
+      this.encryptionKey,
+      Buffer.from(encryptedValue.iv, 'hex')
+    );
+
+    if (encryptedValue.authTag) {
+      decipher.setAuthTag(Buffer.from(encryptedValue.authTag, 'hex'));
+    }
+
+    let decrypted = decipher.update(encryptedValue.value, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+
+    return JSON.parse(decrypted);
+  }
+
+  async processConfig(config: any): Promise<any> {
+    const processed = {};
+
+    for (const [key, value] of Object.entries(config)) {
+      if (this.isEncryptedValue(value)) {
+        processed[key] = this.decrypt(value as EncryptedValue);
+      } else if (typeof value === 'object' && value !== null) {
+        processed[key] = await this.processConfig(value);
+      } else {
+        processed[key] = value;
+      }
+    }
+
+    return processed;
+  }
+}
+```
+
+### 8. 文档生成
+
+```python
+from typing import Dict, List
+import yaml
+
+class ConfigDocGenerator:
+    def generate_docs(self, schema: Dict, examples: Dict) -> str:
+        docs = ["# Configuration Reference\n"]
+
+        docs.append("## Configuration Options\n")
+        sections = self._generate_sections(schema.get('properties', {}), examples)
+        docs.extend(sections)
+
+        return '\n'.join(docs)
+
+    def _generate_sections(self, properties: Dict, examples: Dict, level: int = 3) -> List[str]:
+        sections = []
+
+        for prop_name, prop_schema in properties.items():
+            sections.append(f"{'#' * level} {prop_name}\n")
+
+            if 'description' in prop_schema:
+                sections.append(f"{prop_schema['description']}\n")
+
+            sections.append(f"**Type:** `{prop_schema.get('type', 'any')}`\n")
+
+            if 'default' in prop_schema:
+                sections.append(f"**Default:** `{prop_schema['default']}`\n")
+
+            if prop_name in examples:
+                sections.append("**Example:**\n```yaml")
+                sections.append(yaml.dump({prop_name: examples[prop_name]}))
+                sections.append("```\n")
+
+        return sections
+```
+
+## 输出格式
+
+1. **配置分析**：当前配置评估
+2. **验证模式**：JSON Schema 定义
+3. **环境规则**：环境特定验证
+4. **测试套件**：配置测试
+5. **迁移脚本**：版本迁移
+6. **安全报告**：问题和建议
+7. **文档**：自动生成的参考文档
+
+重点在于防止配置错误、确保一致性并维护安全最佳实践。
+
+## 局限性
+
+- 仅当任务明确符合上述范围时使用此技能
+- 不要将输出替代环境特定验证、测试或专家审查
+- 如果缺少所需输入、权限、安全边界或成功标准，请停止并请求澄清

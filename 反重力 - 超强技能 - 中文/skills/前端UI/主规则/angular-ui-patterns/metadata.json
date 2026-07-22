@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "organization": "Antigravity Awesome Skills",
+  "date": "February 2026",
+  "abstract": "面向 AI 智能体和 LLM 设计的现代 Angular 应用 UI 模式。涵盖加载状态、错误处理、渐进式披露和数据展示模式。强调仅在没有数据时显示加载状态、暴露所有错误、乐观更新以及使用 @defer 实现优雅降级。包含决策树和需要避免的反模式。",
+  "references": [
+    "https://angular.dev/guide/defer",
+    "https://angular.dev/guide/templates",
+    "https://material.angular.io",
+    "https://ng-spartan.com"
+  ]
+}
